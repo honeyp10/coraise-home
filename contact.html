@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>무료 상담 신청 | 코레이즈</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='7' fill='none' stroke='%23F15A25' stroke-width='3'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="contact">
+    <header data-header></header>
+    <main id="content" class="page wrap contact-layout">
+      <section class="contact-intro">
+        <p class="kicker">무료 상담 신청</p>
+        <h1>어떤 도움이 필요하세요?</h1>
+        <p>무엇을 도입하거나 해결하고 싶으신가요? 현재 상황을 알려 주세요. 이 화면은 연습용이라 실제로 전송되지 않습니다.</p>
+        <p><a href="tel:18335805">전화 문의 1833-5805</a></p>
+        <p><a href="mailto:sales@coraise.co.kr">이메일 문의 sales@coraise.co.kr</a></p>
+      </section>
+      <section class="card form-card">
+        <form id="consult-form" novalidate>
+          <div class="field">
+            <span>어떤 도움이 필요하세요?</span>
+            <div class="choice-row" id="types">
+              <button class="choice is-on" type="button" data-type="도입·견적" aria-pressed="true">도입·견적</button>
+              <button class="choice" type="button" data-type="기술 상담" aria-pressed="false">기술 상담</button>
+              <button class="choice" type="button" data-type="기타 문의" aria-pressed="false">기타 문의</button>
+            </div>
+          </div>
+          <label class="field">
+            <span>문의할 솔루션 또는 컨설팅 <em>선택</em></span>
+            <select id="service" name="service">
+              <option value="">관심 있는 솔루션 또는 컨설팅을 선택해 주세요</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>문의 내용</span>
+            <textarea id="message" name="message" required placeholder="예) 직원 30명이 사용할 사무실 와이파이 구축 견적이 궁금합니다."></textarea>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span>회사명 <em>선택</em></span>
+              <input id="company" name="company" type="text" autocomplete="organization" placeholder="회사 이름" />
+            </label>
+            <label class="field">
+              <span>회신 이메일 <em>선택</em></span>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="name@company.com" />
+            </label>
+          </div>
+          <label class="field">
+            <span>연락받을 전화번호 <em>선택</em></span>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="010-1234-5678" />
+          </label>
+          <p class="form-error" id="form-error" hidden>문의 내용을 입력해 주세요.</p>
+          <div class="form-actions">
+            <button class="btn btn--solid" type="submit">상담 내용 확인</button>
+            <button class="btn btn--line" type="button" id="copy">문의 내용 복사</button>
+          </div>
+        </form>
+        <div class="confirm" id="confirm" hidden>
+          <h2>상담 내용을 확인했습니다</h2>
+          <p>이 프로토타입은 내용을 서버로 보내지 않습니다. 실제 상담은 1833-5805 또는 sales@coraise.co.kr 로 연락해 주세요.</p>
+          <p id="confirm-summary"></p>
+          <button class="btn btn--line" type="button" id="again">다른 내용 작성</button>
+        </div>
+      </section>
+    </main>
+    <footer class="footer" data-footer></footer>
+    <a class="fab" data-fab href="contact.html"></a>
+    <script src="./assets/app.js"></script>
+  </body>
+</html>

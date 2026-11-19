@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>코레이즈 | IT 담당자가 없어도, 필요한 IT 서비스를 바로 찾아요</title>
+    <meta name="description" content="IT 담당자가 없는 회사도 고민을 검색해 코레이즈의 네트워크, 보안, 계정, 소프트웨어, 하드웨어, 유지보수 서비스를 찾고 상담을 신청할 수 있습니다." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='7' fill='none' stroke='%23F15A25' stroke-width='3'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="home">
+    <header data-header></header>
+    <main id="content">
+      <section class="hero">
+        <h1>IT 담당자가 없어도,<br />필요한 IT 서비스를 바로 찾아요</h1>
+        <p class="hero__lead">고민을 검색하면 맞는 서비스와 상담까지 안내해 드려요</p>
+        <form class="search" id="search-form" role="search">
+          <div class="search__box">
+            <span class="search__glass" id="glass"></span>
+            <input id="q" name="q" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest" aria-label="서비스 또는 고민 검색" placeholder="와이파이 끊김, 보안 점검처럼 고민을 입력해 보세요" />
+            <button class="icon-btn search__clear" id="clear-q" type="button" hidden aria-label="검색어 지우기">×</button>
+            <button class="btn btn--solid search__submit" type="submit">검색</button>
+          </div>
+          <div class="suggest" id="suggest" role="listbox" hidden></div>
+        </form>
+        <div class="chips" id="example-row">
+          <span class="chips__label">검색 예시</span>
+          <span id="examples"></span>
+        </div>
+        <p class="hero__assist"><a href="contact.html">찾기 어렵다면 무료 상담 신청 →</a></p>
+      </section>
+
+      <div id="home-sections">
+        <section class="section">
+          <div class="wrap">
+            <div class="section__head">
+              <div>
+                <h2>어떤 고민이 가장 가까운가요?</h2>
+                <p>IT 용어를 몰라도, 지금 상황에 가까운 고민을 골라 보세요.</p>
+              </div>
+            </div>
+            <div class="concern-grid" id="concerns"></div>
+          </div>
+        </section>
+
+        <section class="section" id="catalog">
+          <div class="wrap">
+            <div class="section__head">
+              <div>
+                <h2>서비스로 찾기</h2>
+                <p>메뉴와 같은 6개 분류입니다.</p>
+              </div>
+              <a class="link-quiet" href="index.html?all=1">전체 서비스 한눈에 보기 →</a>
+            </div>
+            <div class="cat-grid" id="categories"></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="wrap">
+            <div class="section__head">
+              <div>
+                <h2>믿고 맡길 수 있는 이유</h2>
+                <p>코레이즈가 공개한 파트너·인증 이름만 적었습니다.</p>
+              </div>
+            </div>
+            <div class="partner-grid" id="partners"></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="wrap">
+            <div class="section__head">
+              <div>
+                <h2>함께한 고객사의 사례</h2>
+                <p>공개된 인터뷰 중 3건입니다. 로고와 사진은 자리만 잡아 두었습니다.</p>
+              </div>
+              <a class="link-quiet" href="cases.html">사례 더 보기 →</a>
+            </div>
+            <div class="logo-row" id="logos"></div>
+            <div class="case-grid" id="cases"></div>
+          </div>
+        </section>
+
+        <section class="wrap banner">
+          <div>
+            <h2>고민만 알고 있어도 괜찮아요</h2>
+            <p>1833-5805 · sales@coraise.co.kr</p>
+          </div>
+          <a class="btn btn--solid" href="contact.html">무료 상담 신청 →</a>
+        </section>
+      </div>
+
+      <section class="section results wrap" id="results" hidden>
+        <h2 class="results__title" id="results-title"></h2>
+        <div class="filter-row" id="filters"></div>
+        <div class="card result-sheet" id="result-list"></div>
+        <div class="card results__help">
+          <div>
+            <strong>찾는 서비스가 없나요?</strong>
+            <p>고민을 남겨 주시면 맞는 서비스를 안내하는 상담으로 연결됩니다.</p>
+          </div>
+          <a class="btn btn--solid" href="contact.html">무료 상담 신청 →</a>
+        </div>
+      </section>
+    </main>
+    <footer class="footer" data-footer></footer>
+    <a class="fab" data-fab href="contact.html"></a>
+    <script src="./assets/app.js"></script>
+  </body>
+</html>
