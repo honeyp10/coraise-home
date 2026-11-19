@@ -831,8 +831,282 @@
     return query ? `contact.html?${query}` : "contact.html";
   }
 
-  // js/layout.js
+  // js/inquiry.js
   function esc(value) {
+    return String(value != null ? value : "").replace(
+      /[&<>"']/g,
+      (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]
+    );
+  }
+  var TYPES = ["\uC194\uB8E8\uC158 \uB3C4\uC785 \uC0C1\uB2F4", "\uACAC\uC801 \uC694\uCCAD", "\uAE30\uC220 \uBB38\uC758", "\uAE30\uD0C0"];
+  var dialog;
+  var success;
+  var lastFocus = null;
+  var state = emptyState();
+  var dirty = false;
+  function emptyState() {
+    return { service: null, category: null, concern: "", q: "", from: "", type: TYPES[0], interests: /* @__PURE__ */ new Set() };
+  }
+  function draft() {
+    const lines = [];
+    if (state.from === "download" && state.service) {
+      lines.push(`\uC790\uB8CC\uB294 \uC0C1\uB2F4 \uC2E0\uCCAD \uD6C4 \uBCF4\uB0B4\uB4DC\uB824\uC694. ${state.service.name} \uC790\uB8CC\uB97C \uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
+    } else if (state.service) {
+      lines.push(`${state.service.name} \uAD00\uB828\uD574\uC11C \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
+    } else if (state.category) {
+      lines.push(`${state.category.name} \uC911\uC5D0\uC11C \uC5B4\uB5A4 \uC11C\uBE44\uC2A4\uAC00 \uB9DE\uB294\uC9C0 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
+    }
+    if (state.concern) lines.push(`\uAC00\uAE4C\uC6B4 \uACE0\uBBFC\uC740 \u2018${state.concern}\u2019\uC785\uB2C8\uB2E4.`);
+    if (state.q) {
+      lines.push(
+        state.from === "cases" ? `\u2018${state.q}\u2019 \uC0AC\uB840\uB97C \uBCF4\uACE0 \uC6B0\uB9AC \uD68C\uC0AC\uB3C4 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.` : `\u2018${state.q}\u2019\uB85C \uCC3E\uC544\uBCF4\uACE0 \uC788\uC2B5\uB2C8\uB2E4.`
+      );
+    }
+    if (!lines.length) return "\uD544\uC694\uD55C IT\uB97C \uC544\uC9C1 \uC815\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC9C0\uAE08 \uC0C1\uD669\uC744 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.";
+    return lines.join(" ");
+  }
+  function focusable(root) {
+    return [...root.querySelectorAll("a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])")].filter(
+      (el) => el.offsetParent !== null || el === document.activeElement
+    );
+  }
+  function trap(event) {
+    const root = success.hidden ? dialog : success;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeInquiry();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const items = focusable(root);
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+  function paintChips() {
+    const box = dialog.querySelector("#picked");
+    const chips = dialog.querySelector("#picked-chips");
+    const items = [];
+    if (state.category) items.push(["category", state.category.name]);
+    if (state.service) items.push(["service", state.service.name]);
+    if (state.concern) items.push(["concern", state.concern]);
+    if (state.q) items.push(["q", state.from === "cases" ? `${state.q} \uC0AC\uB840` : state.q]);
+    box.hidden = items.length === 0;
+    chips.innerHTML = items.map(
+      ([key, label]) => `<span class="picked__chip">${esc(label)} <button type="button" data-remove="${key}" aria-label="${esc(label)} \uC9C0\uC6B0\uAE30">\xD7</button></span>`
+    ).join("");
+    dialog.querySelectorAll('input[name="interest"]').forEach((input) => {
+      input.checked = state.interests.has(input.value);
+    });
+    dialog.querySelectorAll('input[name="type"]').forEach((input) => {
+      input.checked = input.value === state.type;
+    });
+    if (!dirty) dialog.querySelector("#inquiry-message").value = draft();
+  }
+  function openInquiry(source) {
+    const params = source instanceof URLSearchParams ? source : new URLSearchParams(typeof source === "string" ? source : "");
+    state = emptyState();
+    dirty = false;
+    const service = serviceById(params.get("service"));
+    const category = categoryById(params.get("category")) || (service ? categoryById(service.category) : null);
+    state.service = service || null;
+    state.category = category || null;
+    state.concern = (params.get("concern") || "").trim();
+    state.q = (params.get("q") || "").trim();
+    state.from = params.get("from") || "";
+    if (state.category) state.interests.add(state.category.id);
+    dialog.querySelector("form").reset();
+    dialog.querySelector("#inquiry-error").hidden = true;
+    success.hidden = true;
+    dialog.hidden = false;
+    document.body.classList.add("is-locked");
+    ["header", "main", "footer"].forEach((tag) => {
+      var _a2;
+      return (_a2 = document.querySelector(tag)) == null ? void 0 : _a2.setAttribute("aria-hidden", "true");
+    });
+    paintChips();
+    lastFocus = document.activeElement;
+    dialog.querySelector("#company").focus();
+  }
+  function closeInquiry() {
+    dialog.hidden = true;
+    success.hidden = true;
+    document.body.classList.remove("is-locked");
+    ["header", "main", "footer"].forEach((tag) => {
+      var _a2;
+      return (_a2 = document.querySelector(tag)) == null ? void 0 : _a2.removeAttribute("aria-hidden");
+    });
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  }
+  function showSuccess() {
+    dialog.hidden = true;
+    success.hidden = false;
+    success.querySelector("button").focus();
+  }
+  function validate(form) {
+    const missing = [];
+    if (!form.company.value.trim()) missing.push("\uD68C\uC0AC\uBA85");
+    if (!form.person.value.trim()) missing.push("\uB2F4\uB2F9\uC790\uBA85");
+    if (!form.phone.value.trim()) missing.push("\uC5F0\uB77D\uCC98");
+    if (!form.email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.value.trim())) missing.push("\uC774\uBA54\uC77C");
+    if (!form.message.value.trim()) missing.push("\uBB38\uC758 \uB0B4\uC6A9");
+    if (!form.privacy.checked) missing.push("\uAC1C\uC778\uC815\uBCF4 \uC218\uC9D1 \uB3D9\uC758");
+    return missing;
+  }
+  function installInquiry() {
+    if (document.getElementById("inquiry-dialog")) return;
+    const host = document.createElement("div");
+    host.innerHTML = `
+    <div class="modal-back" id="inquiry-dialog" role="dialog" aria-modal="true" aria-labelledby="inquiry-title" hidden>
+      <div class="modal" role="document">
+        <button class="modal__close" type="button" data-close aria-label="\uBB38\uC758 \uCC3D \uB2EB\uAE30">\xD7</button>
+        <p class="kicker">\uBB38\uC758\uD558\uAE30</p>
+        <h2 id="inquiry-title">\uBB38\uC758\uD558\uAE30</h2>
+        <p class="modal__lead">\uD544\uC694\uD558\uC2E0 \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694. \uC774 \uD654\uBA74\uC740 \uC5F0\uC2B5\uC6A9\uC774\uB77C \uC785\uB825 \uB0B4\uC6A9\uC744 \uC804\uC1A1\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p>
+        <form id="inquiry-form" novalidate>
+          <div class="picked" id="picked" hidden>
+            <div class="picked__head">
+              <p class="picked__label">\uC120\uD0DD\uD55C \uB0B4\uC6A9</p>
+              <button class="picked__clear" type="button" id="picked-clear">\uC120\uD0DD\uD55C \uB0B4\uC6A9 \uC9C0\uC6B0\uAE30</button>
+            </div>
+            <div class="picked__chips" id="picked-chips"></div>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>\uD68C\uC0AC\uBA85 <i class="req">*</i></span><input id="company" name="company" required autocomplete="organization" placeholder="\uD68C\uC0AC\uBA85\uC744 \uC785\uB825\uD574 \uC8FC\uC138\uC694." /></label>
+            <label class="field"><span>\uB2F4\uB2F9\uC790\uBA85 <i class="req">*</i></span><input id="person" name="person" required autocomplete="name" placeholder="\uC774\uB984\uC744 \uC785\uB825\uD574 \uC8FC\uC138\uC694." /></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>\uC5F0\uB77D\uCC98 <i class="req">*</i></span><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="010-1234-5678" /></label>
+            <label class="field"><span>\uC774\uBA54\uC77C <i class="req">*</i></span><input id="email" name="email" type="email" required autocomplete="email" placeholder="name@company.com" /></label>
+          </div>
+          <fieldset class="field">
+            <legend>\uBB38\uC758 \uC720\uD615 <i class="req">*</i></legend>
+            <div class="choice-row">
+              ${TYPES.map(
+      (type, index) => `<label class="type-pill"><input type="radio" name="type" value="${esc(type)}" ${index === 0 ? "checked" : ""} /> ${esc(type)}</label>`
+    ).join("")}
+            </div>
+          </fieldset>
+          <fieldset class="field">
+            <legend>\uAD00\uC2EC \uC194\uB8E8\uC158 <em>\uBCF5\uC218 \uC120\uD0DD</em></legend>
+            <div class="choice-row">
+              ${categories.map(
+      (category) => `<label class="check-pill"><input type="checkbox" name="interest" value="${esc(category.id)}" /> ${esc(category.name)}</label>`
+    ).join("")}
+            </div>
+          </fieldset>
+          <label class="field"><span>\uBB38\uC758 \uB0B4\uC6A9 <i class="req">*</i></span><textarea id="inquiry-message" name="message" required placeholder="\uB3C4\uC785 \uBC30\uACBD\uC774\uB098 \uAD81\uAE08\uD55C \uC810\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694."></textarea></label>
+          <div class="privacy">
+            <label><input id="privacy" name="privacy" type="checkbox" required /> \uAC1C\uC778\uC815\uBCF4 \uC218\uC9D1 \uBC0F \uC774\uC6A9\uC5D0 \uB3D9\uC758\uD569\uB2C8\uB2E4. (\uD544\uC218)</label>
+            <button type="button" id="privacy-more" aria-expanded="false" aria-controls="privacy-note">\uC790\uC138\uD788 \uBCF4\uAE30</button>
+            <p id="privacy-note" hidden>\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC740 \uC785\uB825 \uB0B4\uC6A9\uC744 \uC11C\uBC84\uB85C \uBCF4\uB0B4\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uC5F0\uC2B5\uC6A9 \uD654\uBA74\uC785\uB2C8\uB2E4.</p>
+          </div>
+          <p class="form-error" id="inquiry-error" hidden></p>
+          <div class="form-actions modal__actions">
+            <button class="btn btn--line" type="button" data-close>\uCDE8\uC18C</button>
+            <button class="btn btn--solid" type="submit">\uBB38\uC758 \uC811\uC218</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="modal-back" id="inquiry-success" role="dialog" aria-modal="true" aria-labelledby="success-title" hidden>
+      <div class="modal modal--success" role="document">
+        <p class="success-mark" aria-hidden="true">\u2713</p>
+        <h2 id="success-title">\uBB38\uC758\uAC00 \uC811\uC218\uB418\uC5C8\uC2B5\uB2C8\uB2E4!</h2>
+        <p>\uC774 \uD654\uBA74\uC740 \uC5F0\uC2B5\uC6A9 \uD504\uB85C\uD1A0\uD0C0\uC785\uC785\uB2C8\uB2E4. \uC785\uB825\uD55C \uB0B4\uC6A9\uC740 \uC2E4\uC81C\uB85C \uC804\uC1A1\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p>
+        <button class="btn btn--solid" type="button" data-close>\uD655\uC778</button>
+      </div>
+    </div>`;
+    document.body.append(host);
+    dialog = document.getElementById("inquiry-dialog");
+    success = document.getElementById("inquiry-success");
+    dialog.addEventListener("keydown", trap);
+    success.addEventListener("keydown", trap);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog || event.target.closest("[data-close]")) closeInquiry();
+    });
+    success.addEventListener("click", (event) => {
+      if (event.target === success || event.target.closest("[data-close]")) closeInquiry();
+    });
+    dialog.querySelector("#picked-chips").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-remove]");
+      if (!button) return;
+      const key = button.dataset.remove;
+      if (key === "service") state.service = null;
+      if (key === "category") {
+        if (state.category) state.interests.delete(state.category.id);
+        state.category = null;
+      }
+      if (key === "concern") state.concern = "";
+      if (key === "q") state.q = "";
+      paintChips();
+    });
+    dialog.querySelector("#picked-clear").addEventListener("click", () => {
+      state.service = null;
+      state.category = null;
+      state.concern = "";
+      state.q = "";
+      state.interests.clear();
+      paintChips();
+    });
+    dialog.querySelector("#inquiry-message").addEventListener("input", () => {
+      dirty = true;
+    });
+    dialog.querySelectorAll('input[name="interest"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        if (input.checked) state.interests.add(input.value);
+        else state.interests.delete(input.value);
+      });
+    });
+    dialog.querySelectorAll('input[name="type"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        if (input.checked) state.type = input.value;
+      });
+    });
+    dialog.querySelector("#privacy-more").addEventListener("click", (event) => {
+      const note = dialog.querySelector("#privacy-note");
+      note.hidden = !note.hidden;
+      event.currentTarget.setAttribute("aria-expanded", note.hidden ? "false" : "true");
+    });
+    dialog.querySelector("#inquiry-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const missing = validate(form);
+      const error = dialog.querySelector("#inquiry-error");
+      if (missing.length) {
+        error.hidden = false;
+        error.textContent = `${missing.join(", ")} \uD56D\uBAA9\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.`;
+        return;
+      }
+      error.hidden = true;
+      showSuccess();
+    });
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("a[href]");
+      if (!link || event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      let url;
+      try {
+        url = new URL(link.getAttribute("href"), location.href);
+      } catch (e) {
+        return;
+      }
+      const file = url.pathname.split("/").pop();
+      if (file !== "contact.html") return;
+      event.preventDefault();
+      openInquiry(url.searchParams);
+    });
+  }
+
+  // js/layout.js
+  function esc2(value) {
     return String(value != null ? value : "").replace(
       /[&<>"']/g,
       (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]
@@ -844,11 +1118,11 @@
   function menuGrid(category) {
     const cards = menuCards(category.id).map((service) => {
       const mates = service.menuBundle ? bundleMates(service) : [];
-      const include = mates.length > 1 ? `<span class="mega-card__inc">\uD3EC\uD568: ${mates.map((mate) => esc(mate.includeLabel || mate.name)).join(" \xB7 ")}</span>` : service.includes ? `<span class="mega-card__inc">\uD3EC\uD568: ${service.includes.map((item) => esc(item.label)).join(" \xB7 ")}</span>` : "";
+      const include = mates.length > 1 ? `<span class="mega-card__inc">\uD3EC\uD568: ${mates.map((mate) => esc2(mate.includeLabel || mate.name)).join(" \xB7 ")}</span>` : service.includes ? `<span class="mega-card__inc">\uD3EC\uD568: ${service.includes.map((item) => esc2(item.label)).join(" \xB7 ")}</span>` : "";
       const href = service.menuLead ? serviceHref(mates[0].id) : serviceHref(service.id);
       return `<a class="mega-card" href="${href}">
-        <span class="mega-card__title">${esc(service.menuTitle || service.title)}</span>
-        <span class="mega-card__name">${esc(service.menuName || service.name)}</span>
+        <span class="mega-card__title">${esc2(service.menuTitle || service.title)}</span>
+        <span class="mega-card__name">${esc2(service.menuName || service.name)}</span>
         ${include}
       </a>`;
     }).join("");
@@ -860,16 +1134,16 @@
     if (!header || !footer) return;
     const nav = categories.map(
       (category) => `<button class="nav__item" type="button" data-menu="${category.id}" aria-expanded="false" aria-controls="mega-panel">
-          ${esc(category.name)}
+          ${esc2(category.name)}
         </button>`
     ).join("");
     const panels = categories.map(
       (category) => `<div class="mega__panel" data-panel="${category.id}" hidden>
         <div class="mega__intro">
-          <p class="mega__num">${esc(category.num)}</p>
-          <h2>${esc(category.name)}</h2>
-          <p>${esc(category.blurb)}</p>
-          <p class="mega__basis">\uAE30\uC900 \uBA54\uB274: ${esc(category.basis)}</p>
+          <p class="mega__num">${esc2(category.num)}</p>
+          <h2>${esc2(category.name)}</h2>
+          <p>${esc2(category.blurb)}</p>
+          <p class="mega__basis">\uAE30\uC900 \uBA54\uB274: ${esc2(category.basis)}</p>
         </div>
         <div>
           <div class="mega__grid">${menuGrid(category)}</div>
@@ -881,16 +1155,16 @@
       const links = menuCards(category.id).flatMap((service) => {
         if (service.menuBundle) {
           return bundleMates(service).map(
-            (mate) => `<a href="${serviceHref(mate.id)}">${esc(mate.name)} <span>${esc(mate.title)}</span></a>`
+            (mate) => `<a href="${serviceHref(mate.id)}">${esc2(mate.name)} <span>${esc2(mate.title)}</span></a>`
           );
         }
         return [
-          `<a href="${serviceHref(service.id)}">${esc(service.name)} <span>${esc(service.title)}</span></a>`
+          `<a href="${serviceHref(service.id)}">${esc2(service.name)} <span>${esc2(service.title)}</span></a>`
         ];
       }).join("");
       return `<div class="drawer__group">
         <button type="button" class="drawer__toggle" aria-expanded="false">
-          <span><small>${esc(category.num)}</small> ${esc(category.name)}</span>
+          <span><small>${esc2(category.num)}</small> ${esc2(category.name)}</span>
           ${icon("arrow", "icon icon--turn")}
         </button>
         <div class="drawer__links" hidden>${links}<a class="drawer__ask" href="${consultHref({ category: category.id, from: "menu" })}">\uC5B4\uB5A4 \uAC78 \uACE8\uB77C\uC57C \uD560\uC9C0 \uBAA8\uB974\uACA0\uB2E4\uBA74 \uC0C1\uB2F4 \uC2E0\uCCAD</a></div>
@@ -935,7 +1209,7 @@
         <p class="footer__label">\uC11C\uBE44\uC2A4</p>
         <ul>
           ${categories.map(
-      (category) => `<li><a href="index.html?cat=${category.id}">${esc(category.name)}</a></li>`
+      (category) => `<li><a href="index.html?cat=${category.id}">${esc2(category.name)}</a></li>`
     ).join("")}
         </ul>
       </div>
@@ -952,12 +1226,13 @@
         <a class="btn btn--solid" href="contact.html">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD ${icon("arrow", "icon icon--end")}</a>
       </div>
     </div>
-    <p class="footer__legal">${esc(ADDRESS)} \xB7 ${esc(COMPANY)} \xB7 \uD300 \uC2ED\uC77C\uC6D4\uAD6C\uC77C \uD559\uC2B5\uC6A9 \uD504\uB85C\uD1A0\uD0C0\uC785. \uACF5\uC2DD \uC548\uB0B4\uB294 <a href="https://coraise.kr/" target="_blank" rel="noopener noreferrer">coraise.kr</a></p>`;
+    <p class="footer__legal">${esc2(ADDRESS)} \xB7 ${esc2(COMPANY)} \xB7 \uD300 \uC2ED\uC77C\uC6D4\uAD6C\uC77C \uD559\uC2B5\uC6A9 \uD504\uB85C\uD1A0\uD0C0\uC785. \uACF5\uC2DD \uC548\uB0B4\uB294 <a href="https://coraise.kr/" target="_blank" rel="noopener noreferrer">coraise.kr</a></p>`;
     const fab = document.querySelector("[data-fab]");
     if (fab) {
       fab.innerHTML = `${icon("headset")} <span>\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</span>`;
     }
     bindMenus(header);
+    installInquiry();
   }
   function bindMenus(header) {
     const mega = header.querySelector(".mega");
@@ -1062,11 +1337,11 @@
   function initCases() {
     renderChrome();
     document.querySelector("#case-list").innerHTML = cases.map(
-      (item) => `<article class="card case" id="${esc(item.id)}">
-      <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC<br />${esc(item.company)}</div>
+      (item) => `<article class="card case" id="${esc2(item.id)}">
+      <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC<br />${esc2(item.company)}</div>
       <div class="case__body">
-        <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc(item.company)} \xB7 ${esc(item.date)}</p>
-        <h3>${esc(item.quote)}</h3>
+        <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)} \xB7 ${esc2(item.date)}</p>
+        <h3>${esc2(item.quote)}</h3>
         <p>\uC778\uD130\uBDF0 \uC804\uBB38\uC740 \uCF54\uB808\uC774\uC988 \uACF5\uC2DD \uC0AC\uC774\uD2B8\uC758 \uACE0\uAC1D \uC0AC\uB840\uC5D0 \uC788\uC2B5\uB2C8\uB2E4.</p>
         <div class="card__actions">
           <a class="card__go" href="https://coraise.kr/" target="_blank" rel="noopener noreferrer">coraise.kr\uC5D0\uC11C \uBCF4\uAE30 \u2192</a>
@@ -1078,117 +1353,9 @@
   }
 
   // js/contact.js
-  var fromLabels = {
-    home: "\uD648",
-    menu: "\uBA54\uB274",
-    search: "\uAC80\uC0C9",
-    service: "\uC11C\uBE44\uC2A4 \uC548\uB0B4",
-    cases: "\uACE0\uAC1D \uC0AC\uB840",
-    about: "\uD68C\uC0AC \uC18C\uAC1C"
-  };
   function initContact() {
     renderChrome();
-    const params = new URLSearchParams(location.search);
-    const state = {
-      service: serviceById(params.get("service")) || null,
-      category: categoryById(params.get("category")) || null,
-      concern: (params.get("concern") || "").trim(),
-      q: (params.get("q") || "").trim(),
-      from: params.get("from") || ""
-    };
-    if (state.service && !state.category) state.category = categoryById(state.service.category) || null;
-    const message = document.querySelector("#message");
-    const picked = document.querySelector("#picked");
-    const chips = document.querySelector("#picked-chips");
-    const error = document.querySelector("#form-error");
-    const form = document.querySelector("#consult-form");
-    const confirm = document.querySelector("#confirm");
-    let messageDirty = false;
-    function draft() {
-      const lines = [];
-      if (state.service) lines.push(`${state.service.name} \uAD00\uB828\uD574\uC11C \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
-      else if (state.category) lines.push(`${state.category.name} \uC911\uC5D0\uC11C \uC5B4\uB5A4 \uC11C\uBE44\uC2A4\uAC00 \uB9DE\uB294\uC9C0 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
-      if (state.concern) lines.push(`\uAC00\uAE4C\uC6B4 \uACE0\uBBFC\uC740 \u2018${state.concern}\u2019\uC785\uB2C8\uB2E4.`);
-      if (state.q) {
-        lines.push(
-          state.from === "cases" ? `\u2018${state.q}\u2019 \uC0AC\uB840\uB97C \uBCF4\uACE0 \uC6B0\uB9AC \uD68C\uC0AC\uB3C4 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.` : `\u2018${state.q}\u2019\uB85C \uCC3E\uC544\uBCF4\uACE0 \uC788\uC2B5\uB2C8\uB2E4.`
-        );
-      }
-      if (!lines.length) return "\uD544\uC694\uD55C IT\uB97C \uC544\uC9C1 \uC815\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC9C0\uAE08 \uC0C1\uD669\uC744 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.";
-      return lines.join(" ");
-    }
-    function chip(key, label) {
-      return `<span class="picked__chip">${esc(label)} <button type="button" data-remove="${key}" aria-label="${esc(label)} \uC9C0\uC6B0\uAE30">\xD7</button></span>`;
-    }
-    function paint() {
-      const items = [];
-      if (state.category) items.push(chip("category", state.category.name));
-      if (state.service) items.push(chip("service", state.service.name));
-      if (state.concern) items.push(chip("concern", state.concern));
-      if (state.q) items.push(chip("q", state.from === "cases" ? `${state.q} \uC0AC\uB840` : state.q));
-      picked.hidden = items.length === 0;
-      chips.innerHTML = items.join("");
-      if (!messageDirty) message.value = draft();
-    }
-    function clearPicked() {
-      state.service = null;
-      state.category = null;
-      state.concern = "";
-      state.q = "";
-      paint();
-    }
-    chips.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-remove]");
-      if (!button) return;
-      const key = button.dataset.remove;
-      if (key === "service") state.service = null;
-      if (key === "category") state.category = null;
-      if (key === "concern") state.concern = "";
-      if (key === "q") state.q = "";
-      paint();
-    });
-    document.querySelector("#picked-clear").addEventListener("click", clearPicked);
-    message.addEventListener("input", () => {
-      messageDirty = true;
-    });
-    paint();
-    function payload() {
-      const pickedLines = [];
-      if (state.category) pickedLines.push(`\uBD84\uB958: ${state.category.name}`);
-      if (state.service) pickedLines.push(`\uC11C\uBE44\uC2A4: ${state.service.name}`);
-      if (state.concern) pickedLines.push(`\uACE0\uBBFC: ${state.concern}`);
-      if (state.q) pickedLines.push(state.from === "cases" ? `\uC0AC\uB840: ${state.q}` : `\uAC80\uC0C9\uC5B4: ${state.q}`);
-      if (state.from && fromLabels[state.from]) pickedLines.push(`\uB4E4\uC5B4\uC628 \uACF3: ${fromLabels[state.from]}`);
-      return [
-        `\uC774\uB984: ${document.querySelector("#name").value.trim()}`,
-        `\uC5F0\uB77D\uCC98: ${document.querySelector("#phone").value.trim()}`,
-        `\uD68C\uC0AC\uBA85: ${document.querySelector("#company").value.trim() || "-"}`,
-        pickedLines.length ? pickedLines.join("\n") : "\uC120\uD0DD\uD55C \uB0B4\uC6A9: \uC5C6\uC74C",
-        "",
-        message.value.trim()
-      ].join("\n");
-    }
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const name = document.querySelector("#name").value.trim();
-      const phone = document.querySelector("#phone").value.trim();
-      if (!name || !phone || !message.value.trim()) {
-        error.hidden = false;
-        if (!name) document.querySelector("#name").focus();
-        else if (!phone) document.querySelector("#phone").focus();
-        else message.focus();
-        return;
-      }
-      error.hidden = true;
-      document.querySelector("#confirm-summary").textContent = payload();
-      form.hidden = true;
-      confirm.hidden = false;
-    });
-    document.querySelector("#again").addEventListener("click", () => {
-      form.hidden = false;
-      confirm.hidden = true;
-      document.querySelector("#name").focus();
-    });
+    openInquiry(location.search);
   }
 
   // js/search.js
@@ -1257,6 +1424,7 @@
 
   // js/home.js
   function initHome() {
+    var _a2;
     renderChrome();
     document.querySelector("#glass").innerHTML = icon("search");
     const home = document.querySelector("#home-sections");
@@ -1266,12 +1434,13 @@
     const suggest = document.querySelector("#suggest");
     const clearBtn = document.querySelector("#clear-q");
     const box = document.querySelector(".search");
-    const state = {
+    const state2 = {
       query: "",
       category: "",
       showAll: false,
       active: -1,
-      options: []
+      options: [],
+      sort: "recommend"
     };
     function optionButtons() {
       return [...suggest.querySelectorAll("[data-option]")];
@@ -1279,24 +1448,13 @@
     function paintHome() {
       document.querySelector("#concerns").innerHTML = concerns.map((item) => {
         const see = concernHref(item);
-        const ask = consultHref({
-          category: item.category,
-          concern: item.title,
-          q: item.query,
-          from: "home"
-        });
-        return `<article class="card concern">
-        <a class="concern__main" href="${see}">
+        return `<a class="card concern" href="${see}">
           <span class="concern__bar"></span>
           <span class="tone">${icon(item.icon)}</span>
-          <h3>${esc(item.title)}</h3>
-          <p>${esc(item.text)}</p>
-        </a>
-        <div class="card__actions">
-          <a class="card__go" href="${see}">\uC194\uB8E8\uC158 \uBCF4\uAE30 \u2192</a>
-          <a class="card__go" href="${ask}">\uC774 \uACE0\uBBFC\uC73C\uB85C \uC0C1\uB2F4</a>
-        </div>
-      </article>`;
+          <h3>${esc2(item.title)}</h3>
+          <p>${esc2(item.text)}</p>
+          <span class="card__go">\uC194\uB8E8\uC158 \uBCF4\uAE30 \u2192</span>
+        </a>`;
       }).join("");
       document.querySelector("#categories").innerHTML = categories.map((category) => {
         const count = servicesIn(category.id).length;
@@ -1305,7 +1463,7 @@
         return `<article class="card cat">
         <a class="cat__main" href="${see}">
           <span class="tone">${icon(category.icon)}</span>
-          <h3>${esc(category.name)}</h3>
+          <h3>${esc2(category.name)}</h3>
           <span class="cat__count">\uC11C\uBE44\uC2A4 ${count}\uAC1C</span>
         </a>
         <div class="card__actions">
@@ -1317,20 +1475,20 @@
       document.querySelector("#partners").innerHTML = partners.map(
         (item) => `<article class="card partner">
         <span class="tone">${icon("check")}</span>
-        <h3>${esc(item.name)}</h3>
-        <p>${esc(item.text)}</p>
+        <h3>${esc2(item.name)}</h3>
+        <p>${esc2(item.text)}</p>
       </article>`
       ).join("");
       document.querySelector("#logos").innerHTML = cases.map(
-        (item) => `<div class="card logo-slot"><span>\uB85C\uACE0 \uC790\uB9AC</span><strong>${esc(item.company)}</strong></div>`
+        (item) => `<div class="card logo-slot"><span>\uB85C\uACE0 \uC790\uB9AC</span><strong>${esc2(item.company)}</strong></div>`
       ).join("");
       document.querySelector("#cases").innerHTML = cases.slice(0, 3).map(
         (item) => `<article class="card case">
         <a class="case__link" href="cases.html#${item.id}">
           <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC</div>
           <div class="case__body">
-            <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc(item.company)}</p>
-            <h3>${esc(item.quote)}</h3>
+            <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)}</p>
+            <h3>${esc2(item.quote)}</h3>
           </div>
         </a>
         <div class="card__actions case__actions">
@@ -1339,7 +1497,7 @@
         </div>
       </article>`
       ).join("");
-      document.querySelector("#examples").innerHTML = examples.map((word) => `<button class="chip" type="button" data-example="${esc(word)}">${esc(word)}</button>`).join("");
+      document.querySelector("#examples").innerHTML = examples.map((word) => `<button class="chip" type="button" data-example="${esc2(word)}">${esc2(word)}</button>`).join("");
     }
     function concernHref(item) {
       const params = new URLSearchParams();
@@ -1349,55 +1507,58 @@
     }
     function readUrl() {
       const params = new URLSearchParams(location.search);
-      state.query = params.get("q") || "";
-      state.category = params.get("cat") || "";
-      state.showAll = params.get("all") === "1";
-      input.value = state.query;
+      state2.query = params.get("q") || "";
+      state2.category = params.get("cat") || "";
+      state2.showAll = params.get("all") === "1";
+      input.value = state2.query;
       syncClear();
-      renderResults();
+      renderResults({ scroll: hasResultsMode() });
     }
     function writeUrl() {
       const params = new URLSearchParams();
-      if (state.query) params.set("q", state.query);
-      if (state.category) params.set("cat", state.category);
-      if (state.showAll) params.set("all", "1");
+      if (state2.query) params.set("q", state2.query);
+      if (state2.category) params.set("cat", state2.category);
+      if (state2.showAll) params.set("all", "1");
       const next = params.toString();
       history.replaceState(null, "", next ? `?${next}` : "index.html");
     }
-    function pool() {
-      if (state.showAll && !state.query) return services;
-      if (state.query) return searchServices(services, state.query);
-      if (state.category) return servicesIn(state.category);
-      return [];
+    function source() {
+      if (state2.query) return searchServices(services, state2.query);
+      return [...services];
+    }
+    function ordered(rows) {
+      const copy = [...rows];
+      if (state2.sort === "name") copy.sort((a, b) => a.name.localeCompare(b.name, "ko"));
+      return copy;
     }
     function visible() {
-      const rows = pool();
-      if (!state.category || state.category && !state.query && !state.showAll) return rows;
-      if (state.query || state.showAll) return rows.filter((service) => service.category === state.category);
-      return rows;
+      const rows = source();
+      if (!state2.category) return ordered(rows);
+      return ordered(rows.filter((service) => service.category === state2.category));
     }
     function hasResultsMode() {
-      return Boolean(state.query || state.category || state.showAll);
+      return Boolean(state2.query || state2.category || state2.showAll);
     }
-    function renderResults() {
+    function renderResults(options = {}) {
       const on = hasResultsMode();
       home.hidden = on;
       results.hidden = !on;
       if (!on) return;
+      const base = source();
       const rows = visible();
-      const base = pool();
       const title = document.querySelector("#results-title");
-      if (state.query) {
-        title.innerHTML = `\u2018${esc(state.query)}\u2019 \uAC80\uC0C9 \uACB0\uACFC <em>${rows.length}\uAC74</em>`;
-      } else if (state.category && !state.showAll) {
-        const category = categories.find((item) => item.id === state.category);
-        title.innerHTML = `${esc((category == null ? void 0 : category.name) || "\uC11C\uBE44\uC2A4")} <em>${rows.length}\uAC74</em>`;
+      const total = base.length;
+      if (state2.query) {
+        title.innerHTML = `\u201C${esc2(state2.query)}\u201D \uAC80\uC0C9\uACB0\uACFC <em>${total}\uAC74</em>`;
+      } else if (state2.category && !state2.showAll) {
+        const category = categories.find((item) => item.id === state2.category);
+        title.innerHTML = `${esc2((category == null ? void 0 : category.name) || "\uC11C\uBE44\uC2A4")} <em>${rows.length}\uAC74</em>`;
       } else {
-        title.innerHTML = `\uC804\uCCB4 \uC11C\uBE44\uC2A4 <em>${rows.length}\uAC74</em>`;
+        title.innerHTML = `\uC804\uCCB4 \uC11C\uBE44\uC2A4 <em>${total}\uAC74</em>`;
       }
       const ask = consultHref({
-        q: state.query,
-        category: state.category,
+        q: state2.query,
+        category: state2.category,
         from: "search"
       });
       const resultsCta = document.querySelector("#results-cta");
@@ -1406,16 +1567,18 @@
         resultsCta.innerHTML = `<a href="${ask}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a>`;
       }
       if (helpLink) helpLink.href = ask;
-      const chips = [{ id: "", name: "\uC804\uCCB4" }, ...categories];
+      const counts = new Map(categories.map((category) => [category.id, base.filter((service) => service.category === category.id).length]));
+      const chips = [{ id: "", name: "\uC804\uCCB4", count: base.length }, ...categories.map((category) => ({ id: category.id, name: category.short, count: counts.get(category.id) }))].filter(
+        (chip) => chip.id === "" || chip.count > 0
+      );
       document.querySelector("#filters").innerHTML = chips.map((chip) => {
-        const onChip = state.showAll || state.query ? chip.id === state.category : chip.id === (state.category || "");
-        const pressed = chip.id === "" ? !state.category : state.category === chip.id;
-        return `<button class="chip ${pressed ? "is-on" : ""}" type="button" data-filter="${chip.id}" aria-pressed="${pressed}">${esc(chip.name)}</button>`;
+        const pressed = chip.id === "" ? !state2.category : state2.category === chip.id;
+        return `<button class="chip ${pressed ? "is-on" : ""}" type="button" data-filter="${chip.id}" aria-pressed="${pressed}">${esc2(chip.name)} (${chip.count})</button>`;
       }).join("");
       const list = document.querySelector("#result-list");
       if (!base.length) {
         list.innerHTML = `<div class="empty">
-      <h3>\u2018${esc(state.query)}\u2019\uC5D0 \uB9DE\uB294 \uC11C\uBE44\uC2A4\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h3>
+      <h3>\u2018${esc2(state2.query)}\u2019\uC5D0 \uB9DE\uB294 \uC11C\uBE44\uC2A4\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h3>
       <p>\uB2E4\uB978 \uB9D0\uB85C \uAC80\uC0C9\uD558\uAC70\uB098, \uACE0\uBBFC\uB9CC \uB0A8\uACA8 \uC8FC\uC154\uB3C4 \uB429\uB2C8\uB2E4.</p>
       <a class="btn btn--solid" href="${ask}">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
     </div>`;
@@ -1429,49 +1592,42 @@
         list.innerHTML = rows.map((service) => {
           const category = categories.find((item) => item.id === service.category);
           const detail = `service.html?id=${encodeURIComponent(service.id)}`;
-          const talk = consultHref({
-            service: service.id,
-            category: service.category,
-            q: state.query,
-            from: "search"
-          });
-          return `<article class="result">
-          <a class="result__main" href="${detail}">
-            <h3>${esc(service.name)}</h3>
-            <p>${esc(service.summary)}</p>
-          </a>
-          <span class="pill">${esc((category == null ? void 0 : category.short) || "")}</span>
-          <div class="result__actions">
-            <a class="btn btn--line" href="${detail}">\uC790\uC138\uD788 \u2192</a>
-            <a class="btn btn--solid" href="${talk}">\uC774 \uC11C\uBE44\uC2A4 \uC0C1\uB2F4\uD558\uAE30</a>
-          </div>
-        </article>`;
+          return `<a class="hit" href="${detail}">
+          <span class="hit__thumb" aria-hidden="true"><span>\uC774\uBBF8\uC9C0 \uC790\uB9AC</span><strong>${esc2(service.name)}</strong></span>
+          <span class="hit__body">
+            <strong class="hit__name">${esc2(service.name)}</strong>
+            <span class="hit__sub">${esc2(service.title)}</span>
+            <span class="hit__desc">${esc2(service.summary)}</span>
+            <span class="hit__tags"><span class="pill">${esc2((category == null ? void 0 : category.short) || "")}</span></span>
+          </span>
+          <span class="hit__chevron" aria-hidden="true">\u203A</span>
+        </a>`;
         }).join("");
       }
-      results.scrollIntoView({ block: "start" });
+      if (options.scroll) results.scrollIntoView({ block: "start" });
     }
     function syncClear() {
       clearBtn.hidden = input.value.trim().length === 0;
     }
     function openSuggest(matches) {
-      state.options = matches.slice(0, 5);
-      state.active = -1;
+      state2.options = matches.slice(0, 5);
+      state2.active = -1;
       if (!input.value.trim()) {
         suggest.hidden = true;
         box.classList.remove("is-open");
         return;
       }
-      const items = state.options.map((service, index) => {
+      const items = state2.options.map((service, index) => {
         const category = categories.find((item) => item.id === service.category);
         return `<a class="suggest__item" role="option" data-option="${index}" href="service.html?id=${encodeURIComponent(service.id)}">
         <span class="suggest__mark">${icon((category == null ? void 0 : category.icon) || "box")}</span>
-        <span class="suggest__copy"><strong>${esc(service.name)}</strong><span>${esc(service.title)}</span></span>
-        <span class="suggest__cat">${esc((category == null ? void 0 : category.name) || "")} ${icon("arrow", "icon")}</span>
+        <span class="suggest__copy"><strong>${esc2(service.name)}</strong><span>${esc2(service.title)}</span></span>
+        <span class="suggest__cat">${esc2((category == null ? void 0 : category.name) || "")} ${icon("arrow", "icon")}</span>
       </a>`;
       }).join("");
-      const emptyNote = state.options.length ? "" : `<p class="suggest__item" style="cursor:default">\uBC14\uB85C \uC5F0\uACB0\uD560 \uC11C\uBE44\uC2A4\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. Enter\uB85C \uC804\uCCB4 \uACB0\uACFC\uB97C \uD655\uC778\uD558\uC138\uC694.</p>`;
+      const emptyNote = state2.options.length ? "" : `<p class="suggest__item" style="cursor:default">\uBC14\uB85C \uC5F0\uACB0\uD560 \uC11C\uBE44\uC2A4\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. Enter\uB85C \uC804\uCCB4 \uACB0\uACFC\uB97C \uD655\uC778\uD558\uC138\uC694.</p>`;
       const typed = input.value.trim();
-      suggest.innerHTML = `${emptyNote}${items}<button class="suggest__all" type="button" data-option="all">Enter \uB610\uB294 \uAC80\uC0C9 \uBC84\uD2BC \u2192 \u300C${esc(typed)}\u300D \uC804\uCCB4 \uACB0\uACFC \uBCF4\uAE30</button><a class="suggest__ask" href="${consultHref({ q: typed, from: "search" })}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a>`;
+      suggest.innerHTML = `${emptyNote}${items}<button class="suggest__all" type="button" data-option="all">Enter \uB610\uB294 \uAC80\uC0C9 \uBC84\uD2BC \u2192 \u300C${esc2(typed)}\u300D \uC804\uCCB4 \uACB0\uACFC \uBCF4\uAE30</button><a class="suggest__ask" href="${consultHref({ q: typed, from: "search" })}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a>`;
       suggest.hidden = false;
       box.classList.add("is-open");
       input.setAttribute("aria-expanded", "true");
@@ -1483,11 +1639,11 @@
       }
       const nodes = optionButtons();
       if (!nodes.length) return;
-      const current = state.active;
+      const current = state2.active;
       let next = current + step;
       if (next < 0) next = nodes.length - 1;
       if (next >= nodes.length) next = 0;
-      state.active = next;
+      state2.active = next;
       nodes.forEach((node2, index) => node2.classList.toggle("is-active", index === next));
       const node = nodes[next];
       if (node.id) input.setAttribute("aria-activedescendant", node.id);
@@ -1501,23 +1657,23 @@
       link.href = consultHref({ q: typed, from: "home" });
     }
     function runSearch(query) {
-      state.query = query.trim();
-      state.showAll = false;
-      if (!state.query) state.category = "";
-      input.value = state.query;
+      state2.query = query.trim();
+      state2.showAll = false;
+      if (!state2.query) state2.category = "";
+      input.value = state2.query;
       suggest.hidden = true;
       box.classList.remove("is-open");
       input.setAttribute("aria-expanded", "false");
       syncClear();
       syncHeroConsult();
       writeUrl();
-      renderResults();
+      renderResults({ scroll: true });
     }
     paintHome();
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const current = optionButtons()[state.active];
-      if (current && current.dataset.option !== "all" && state.active >= 0) {
+      const current = optionButtons()[state2.active];
+      if (current && current.dataset.option !== "all" && state2.active >= 0) {
         window.location.href = current.getAttribute("href");
         return;
       }
@@ -1539,7 +1695,7 @@
       } else if (event.key === "Escape") {
         suggest.hidden = true;
         box.classList.remove("is-open");
-        state.active = -1;
+        state2.active = -1;
       }
     });
     clearBtn.addEventListener("click", () => {
@@ -1552,16 +1708,20 @@
     document.querySelector("#examples").addEventListener("click", (event) => {
       const button = event.target.closest("[data-example]");
       if (!button) return;
-      state.category = "";
+      state2.category = "";
       runSearch(button.dataset.example);
     });
     document.querySelector("#results").addEventListener("click", (event) => {
       const button = event.target.closest("[data-filter]");
       if (!button) return;
-      state.category = button.dataset.filter;
-      if (!state.query && state.category) state.showAll = false;
-      if (!state.query && !state.category) state.showAll = true;
+      state2.category = button.dataset.filter;
+      if (!state2.query && state2.category) state2.showAll = false;
+      if (!state2.query && !state2.category) state2.showAll = true;
       writeUrl();
+      renderResults();
+    });
+    (_a2 = document.querySelector("#sort")) == null ? void 0 : _a2.addEventListener("change", (event) => {
+      state2.sort = event.target.value;
       renderResults();
     });
     document.addEventListener("click", (event) => {
@@ -1576,6 +1736,12 @@
   }
 
   // js/service.js
+  function placeholder(id, title, text) {
+    return `<section id="${id}" class="detail-block">
+    <h2>${esc2(title)}</h2>
+    <p class="note">${esc2(text)}</p>
+  </section>`;
+  }
   function initService() {
     renderChrome();
     const params = new URLSearchParams(location.search);
@@ -1584,47 +1750,77 @@
     if (!service) {
       document.title = "\uC11C\uBE44\uC2A4\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4 | \uCF54\uB808\uC774\uC988";
       main.innerHTML = `<p class="crumb"><a href="index.html">\uD648</a></p>
-    <h1>\uC11C\uBE44\uC2A4\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4</h1>
-    <p>\uBAA9\uB85D\uC5D0\uC11C \uB2E4\uC2DC \uACE8\uB77C \uC8FC\uC138\uC694.</p>
-    <p><a class="btn btn--solid" href="index.html?all=1">\uC804\uCCB4 \uC11C\uBE44\uC2A4 \uBCF4\uAE30</a></p>`;
-    } else {
-      const category = categoryById(service.category);
-      document.title = `${service.name} | \uCF54\uB808\uC774\uC988`;
-      const mates = bundleMates(service).filter((item) => item.id !== service.id);
-      const related = servicesIn(service.category).filter((item) => item.id !== service.id).slice(0, 4);
-      const includes = service.includes || [];
-      main.innerHTML = `
-    <p class="crumb"><a href="index.html">\uD648</a> \xB7 <a href="index.html?cat=${category.id}">${esc(category.name)}</a> \xB7 ${esc(service.name)}</p>
-    <div class="detail">
-      <article class="card detail__main">
-        <p class="kicker">${esc(category.name)}</p>
-        <h1>${esc(service.name)}</h1>
-        <p>${esc(service.summary)}</p>
-        <p>${esc(service.title)}</p>
-        ${includes.length ? `<h2>\uD568\uAED8 \uC548\uB0B4\uD558\uB294 \uC774\uB984</h2><ul class="point-list">${includes.map(
-        (item) => `<li>${item.url ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.label)}</a>` : esc(item.label)}</li>`
-      ).join("")}</ul>` : ""}
-        ${mates.length ? `<h2>\uAC19\uC740 \uBB36\uC74C</h2><ul class="point-list">${mates.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a> \xB7 ${esc(item.summary)}</li>`).join("")}</ul>` : ""}
-        <div class="form-actions">
-          <a class="btn btn--solid" href="${consultHref({ service: service.id, category: category.id, from: "service" })}">\uC774 \uC11C\uBE44\uC2A4 \uC0C1\uB2F4\uD558\uAE30</a>
-          ${service.url ? `<a class="btn btn--line" href="${esc(service.url)}" target="_blank" rel="noopener noreferrer">\uAE30\uC874 \uC548\uB0B4 \uD398\uC774\uC9C0</a>` : ""}
-        </div>
-      </article>
-      <aside class="card detail__side">
-        <h2>\uAC19\uC740 \uBD84\uB958</h2>
-        <div class="side-links">
-          ${related.map(
-        (item) => `<div class="side-row">
-                <a href="service.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>
-                <a href="${consultHref({ service: item.id, category: item.category, from: "service" })}">\uC774 \uC11C\uBE44\uC2A4 \uC0C1\uB2F4\uD558\uAE30</a>
-              </div>`
-      ).join("")}
-          <a href="index.html?cat=${category.id}">${esc(category.name)} \uC804\uCCB4 \uBCF4\uAE30</a>
-        </div>
-        <p class="choice-cta"><a href="${consultHref({ category: category.id, from: "service" })}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a></p>
-      </aside>
-    </div>`;
+      <h1>\uC11C\uBE44\uC2A4\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4</h1>
+      <p>\uBAA9\uB85D\uC5D0\uC11C \uB2E4\uC2DC \uACE8\uB77C \uC8FC\uC138\uC694.</p>
+      <p><a class="btn btn--solid" href="index.html?all=1">\uC804\uCCB4 \uC11C\uBE44\uC2A4 \uBCF4\uAE30</a></p>`;
+      return;
     }
+    const category = categoryById(service.category);
+    document.title = `${service.name} | \uCF54\uB808\uC774\uC988`;
+    const includes = service.includes || [];
+    const mates = bundleMates(service).filter((item) => item.id !== service.id);
+    const related = servicesIn(service.category).filter((item) => item.id !== service.id).slice(0, 4);
+    const known = [
+      { icon: category.icon || "box", label: "\uBD84\uB958", text: category.name },
+      { icon: "check", label: "\uC548\uB0B4 \uC774\uB984", text: service.title },
+      {
+        icon: "box",
+        label: "\uD568\uAED8 \uC801\uD78C \uC774\uB984",
+        text: includes.length ? includes.map((item) => item.label).join(" \xB7 ") : "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uB530\uB85C \uC801\uD78C \uAD6C\uC131\uC740 \uC5C6\uC2B5\uB2C8\uB2E4."
+      }
+    ];
+    const ask = consultHref({ service: service.id, category: category.id, from: "service" });
+    const download = consultHref({ service: service.id, category: category.id, from: "download" });
+    main.innerHTML = `
+    <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
+    <section class="product">
+      <div>
+        <h1>${esc2(service.name)}</h1>
+        <p class="product__sub">${esc2(service.title)}</p>
+        <p>${esc2(service.summary)}</p>
+        <div class="form-actions">
+          <a class="btn btn--solid" href="${ask}">\uB3C4\uC785 \uC0C1\uB2F4\uD558\uAE30 \u2192</a>
+          <a class="btn btn--line" href="${download}">\uC790\uB8CC \uB2E4\uC6B4\uB85C\uB4DC</a>
+        </div>
+        <p class="note">\uC790\uB8CC \uD30C\uC77C\uC740 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uC5C6\uC2B5\uB2C8\uB2E4. \uC790\uB8CC \uB2E4\uC6B4\uB85C\uB4DC\uB294 \uC0C1\uB2F4 \uCC3D\uC744 \uC5FD\uB2C8\uB2E4.</p>
+      </div>
+      <div class="product__aside">
+        <div class="product__logo">\uB85C\uACE0 \uC790\uB9AC<br /><strong>${esc2(service.name)}</strong></div>
+        <div class="product__photo">\uC81C\uD488 \uC774\uBBF8\uC9C0 \uC790\uB9AC</div>
+      </div>
+    </section>
+    <nav class="detail-tabs" aria-label="\uC11C\uBE44\uC2A4 \uB0B4\uC6A9">
+      <a href="#overview">\uAC1C\uC694</a>
+      <a href="#features">\uC8FC\uC694 \uAE30\uB2A5</a>
+      <a href="#effect">\uB3C4\uC785 \uD6A8\uACFC</a>
+      <a href="#ops">\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0</a>
+      <a href="#cases">\uAD00\uB828 \uC0AC\uB840</a>
+    </nav>
+    <section id="overview" class="detail-block">
+      <h2>${esc2(service.name)}\uB780?</h2>
+      <p>${esc2(service.summary)}</p>
+      <div class="feature-grid">
+        ${known.map(
+      (item) => `<article class="feature">
+              <span class="tone">${icon(item.icon)}</span>
+              <h3>${esc2(item.label)}</h3>
+              <p>${esc2(item.text)}</p>
+            </article>`
+    ).join("")}
+      </div>
+      ${mates.length ? `<h3>\uAC19\uC740 \uBB36\uC74C</h3><ul class="point-list">${mates.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc2(item.name)}</a></li>`).join("")}</ul>` : ""}
+      ${related.length ? `<h3>\uAC19\uC740 \uBD84\uB958</h3><ul class="point-list">${related.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc2(item.name)}</a> \xB7 ${esc2(item.title)}</li>`).join("")}</ul>` : ""}
+    </section>
+    ${placeholder("features", "\uC8FC\uC694 \uAE30\uB2A5", "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0\uB294 \uAE30\uB2A5 \uBAA9\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
+    ${placeholder("effect", "\uB3C4\uC785 \uD6A8\uACFC", "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0\uB294 \uB3C4\uC785 \uD6A8\uACFC\uB97C \uC801\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
+    ${placeholder("ops", "\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0", service.category === "care" ? service.summary : "\uAD6C\uCD95\uACFC \uC6B4\uC601 \uBC94\uC704\uB294 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uB530\uB85C \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
+    <section id="cases" class="detail-block">
+      <h2>\uAD00\uB828 \uC0AC\uB840</h2>
+      <p class="note">\uACF5\uAC1C \uC778\uD130\uBDF0\uB97C \uC774 \uC11C\uBE44\uC2A4\uC5D0 \uC5F0\uACB0\uD574 \uB450\uC9C0\uB294 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC544\uB798\uB294 \uCF54\uB808\uC774\uC988\uAC00 \uACF5\uAC1C\uD55C \uACE0\uAC1D \uC0AC\uB840\uC785\uB2C8\uB2E4.</p>
+      <ul class="point-list">
+        ${cases.slice(0, 3).map((item) => `<li><a href="cases.html#${item.id}">${esc2(item.company)}</a> \xB7 ${esc2(item.quote)}</li>`).join("")}
+      </ul>
+    </section>`;
   }
 
   // js/boot.js
