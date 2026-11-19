@@ -819,6 +819,18 @@
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
   }
 
+  // js/consult.js
+  function consultHref({ service, category, concern, q, from } = {}) {
+    const params = new URLSearchParams();
+    if (service) params.set("service", service);
+    if (category) params.set("category", category);
+    if (concern) params.set("concern", concern);
+    if (q) params.set("q", q);
+    if (from) params.set("from", from);
+    const query = params.toString();
+    return query ? `contact.html?${query}` : "contact.html";
+  }
+
   // js/layout.js
   function esc(value) {
     return String(value != null ? value : "").replace(
@@ -859,7 +871,10 @@
           <p>${esc(category.blurb)}</p>
           <p class="mega__basis">\uAE30\uC900 \uBA54\uB274: ${esc(category.basis)}</p>
         </div>
-        <div class="mega__grid">${menuGrid(category)}</div>
+        <div>
+          <div class="mega__grid">${menuGrid(category)}</div>
+          <p class="mega__ask"><a href="${consultHref({ category: category.id, from: "menu" })}">\uC5B4\uB5A4 \uAC78 \uACE8\uB77C\uC57C \uD560\uC9C0 \uBAA8\uB974\uACA0\uB2E4\uBA74 \uC0C1\uB2F4 \uC2E0\uCCAD</a></p>
+        </div>
       </div>`
     ).join("");
     const drawerGroups = categories.map((category) => {
@@ -878,7 +893,7 @@
           <span><small>${esc(category.num)}</small> ${esc(category.name)}</span>
           ${icon("arrow", "icon icon--turn")}
         </button>
-        <div class="drawer__links" hidden>${links}</div>
+        <div class="drawer__links" hidden>${links}<a class="drawer__ask" href="${consultHref({ category: category.id, from: "menu" })}">\uC5B4\uB5A4 \uAC78 \uACE8\uB77C\uC57C \uD560\uC9C0 \uBAA8\uB974\uACA0\uB2E4\uBA74 \uC0C1\uB2F4 \uC2E0\uCCAD</a></div>
       </div>`;
     }).join("");
     header.innerHTML = `
@@ -1053,60 +1068,115 @@
         <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc(item.company)} \xB7 ${esc(item.date)}</p>
         <h3>${esc(item.quote)}</h3>
         <p>\uC778\uD130\uBDF0 \uC804\uBB38\uC740 \uCF54\uB808\uC774\uC988 \uACF5\uC2DD \uC0AC\uC774\uD2B8\uC758 \uACE0\uAC1D \uC0AC\uB840\uC5D0 \uC788\uC2B5\uB2C8\uB2E4.</p>
-        <a class="card__go" href="https://coraise.kr/" target="_blank" rel="noopener noreferrer">coraise.kr\uC5D0\uC11C \uBCF4\uAE30 \u2192</a>
+        <div class="card__actions">
+          <a class="card__go" href="https://coraise.kr/" target="_blank" rel="noopener noreferrer">coraise.kr\uC5D0\uC11C \uBCF4\uAE30 \u2192</a>
+          <a class="card__go" href="${consultHref({ q: item.company, from: "cases" })}">\uC774 \uC0AC\uB840\uCC98\uB7FC \uC0C1\uB2F4</a>
+        </div>
       </div>
     </article>`
     ).join("");
   }
 
   // js/contact.js
+  var fromLabels = {
+    home: "\uD648",
+    menu: "\uBA54\uB274",
+    search: "\uAC80\uC0C9",
+    service: "\uC11C\uBE44\uC2A4 \uC548\uB0B4",
+    cases: "\uACE0\uAC1D \uC0AC\uB840",
+    about: "\uD68C\uC0AC \uC18C\uAC1C"
+  };
   function initContact() {
     renderChrome();
-    const select = document.querySelector("#service");
-    select.innerHTML += categories.map((category) => {
-      const options = servicesIn(category.id).map((service) => `<option value="${esc(service.id)}">${esc(service.name)}</option>`).join("");
-      return `<optgroup label="${esc(category.name)}">${options}</optgroup>`;
-    }).join("");
     const params = new URLSearchParams(location.search);
-    const preset = serviceById(params.get("service"));
-    if (preset) select.value = preset.id;
+    const state = {
+      service: serviceById(params.get("service")) || null,
+      category: categoryById(params.get("category")) || null,
+      concern: (params.get("concern") || "").trim(),
+      q: (params.get("q") || "").trim(),
+      from: params.get("from") || ""
+    };
+    if (state.service && !state.category) state.category = categoryById(state.service.category) || null;
     const message = document.querySelector("#message");
-    if (params.get("q")) {
-      message.value = `\uAC80\uC0C9\uC5B4: ${params.get("q")}
-`;
+    const picked = document.querySelector("#picked");
+    const chips = document.querySelector("#picked-chips");
+    const error = document.querySelector("#form-error");
+    const form = document.querySelector("#consult-form");
+    const confirm = document.querySelector("#confirm");
+    let messageDirty = false;
+    function draft() {
+      const lines = [];
+      if (state.service) lines.push(`${state.service.name} \uAD00\uB828\uD574\uC11C \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
+      else if (state.category) lines.push(`${state.category.name} \uC911\uC5D0\uC11C \uC5B4\uB5A4 \uC11C\uBE44\uC2A4\uAC00 \uB9DE\uB294\uC9C0 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.`);
+      if (state.concern) lines.push(`\uAC00\uAE4C\uC6B4 \uACE0\uBBFC\uC740 \u2018${state.concern}\u2019\uC785\uB2C8\uB2E4.`);
+      if (state.q) {
+        lines.push(
+          state.from === "cases" ? `\u2018${state.q}\u2019 \uC0AC\uB840\uB97C \uBCF4\uACE0 \uC6B0\uB9AC \uD68C\uC0AC\uB3C4 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.` : `\u2018${state.q}\u2019\uB85C \uCC3E\uC544\uBCF4\uACE0 \uC788\uC2B5\uB2C8\uB2E4.`
+        );
+      }
+      if (!lines.length) return "\uD544\uC694\uD55C IT\uB97C \uC544\uC9C1 \uC815\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC9C0\uAE08 \uC0C1\uD669\uC744 \uC0C1\uB2F4\uBC1B\uACE0 \uC2F6\uC5B4\uC694.";
+      return lines.join(" ");
     }
-    let type = "\uB3C4\uC785\xB7\uACAC\uC801";
-    document.querySelector("#types").addEventListener("click", (event) => {
-      const button = event.target.closest("[data-type]");
+    function chip(key, label) {
+      return `<span class="picked__chip">${esc(label)} <button type="button" data-remove="${key}" aria-label="${esc(label)} \uC9C0\uC6B0\uAE30">\xD7</button></span>`;
+    }
+    function paint() {
+      const items = [];
+      if (state.category) items.push(chip("category", state.category.name));
+      if (state.service) items.push(chip("service", state.service.name));
+      if (state.concern) items.push(chip("concern", state.concern));
+      if (state.q) items.push(chip("q", state.from === "cases" ? `${state.q} \uC0AC\uB840` : state.q));
+      picked.hidden = items.length === 0;
+      chips.innerHTML = items.join("");
+      if (!messageDirty) message.value = draft();
+    }
+    function clearPicked() {
+      state.service = null;
+      state.category = null;
+      state.concern = "";
+      state.q = "";
+      paint();
+    }
+    chips.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-remove]");
       if (!button) return;
-      type = button.dataset.type;
-      document.querySelectorAll(".choice").forEach((node) => {
-        const on = node === button;
-        node.classList.toggle("is-on", on);
-        node.setAttribute("aria-pressed", on ? "true" : "false");
-      });
+      const key = button.dataset.remove;
+      if (key === "service") state.service = null;
+      if (key === "category") state.category = null;
+      if (key === "concern") state.concern = "";
+      if (key === "q") state.q = "";
+      paint();
     });
+    document.querySelector("#picked-clear").addEventListener("click", clearPicked);
+    message.addEventListener("input", () => {
+      messageDirty = true;
+    });
+    paint();
     function payload() {
-      var _a2;
-      const service = serviceById(select.value);
+      const pickedLines = [];
+      if (state.category) pickedLines.push(`\uBD84\uB958: ${state.category.name}`);
+      if (state.service) pickedLines.push(`\uC11C\uBE44\uC2A4: ${state.service.name}`);
+      if (state.concern) pickedLines.push(`\uACE0\uBBFC: ${state.concern}`);
+      if (state.q) pickedLines.push(state.from === "cases" ? `\uC0AC\uB840: ${state.q}` : `\uAC80\uC0C9\uC5B4: ${state.q}`);
+      if (state.from && fromLabels[state.from]) pickedLines.push(`\uB4E4\uC5B4\uC628 \uACF3: ${fromLabels[state.from]}`);
       return [
-        `\uBB38\uC758 \uC720\uD615: ${type}`,
-        `\uC194\uB8E8\uC158: ${service ? `${service.name} (${(_a2 = categories.find((item) => item.id === service.category)) == null ? void 0 : _a2.name})` : "\uC120\uD0DD \uC548 \uD568"}`,
+        `\uC774\uB984: ${document.querySelector("#name").value.trim()}`,
+        `\uC5F0\uB77D\uCC98: ${document.querySelector("#phone").value.trim()}`,
         `\uD68C\uC0AC\uBA85: ${document.querySelector("#company").value.trim() || "-"}`,
-        `\uC774\uBA54\uC77C: ${document.querySelector("#email").value.trim() || "-"}`,
-        `\uC804\uD654\uBC88\uD638: ${document.querySelector("#phone").value.trim() || "-"}`,
+        pickedLines.length ? pickedLines.join("\n") : "\uC120\uD0DD\uD55C \uB0B4\uC6A9: \uC5C6\uC74C",
         "",
         message.value.trim()
       ].join("\n");
     }
-    const form = document.querySelector("#consult-form");
-    const error = document.querySelector("#form-error");
-    const confirm = document.querySelector("#confirm");
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      if (!message.value.trim()) {
+      const name = document.querySelector("#name").value.trim();
+      const phone = document.querySelector("#phone").value.trim();
+      if (!name || !phone || !message.value.trim()) {
         error.hidden = false;
-        message.focus();
+        if (!name) document.querySelector("#name").focus();
+        else if (!phone) document.querySelector("#phone").focus();
+        else message.focus();
         return;
       }
       error.hidden = true;
@@ -1117,21 +1187,7 @@
     document.querySelector("#again").addEventListener("click", () => {
       form.hidden = false;
       confirm.hidden = true;
-      message.focus();
-    });
-    document.querySelector("#copy").addEventListener("click", async () => {
-      if (!message.value.trim()) {
-        error.hidden = false;
-        message.focus();
-        return;
-      }
-      error.hidden = true;
-      try {
-        await navigator.clipboard.writeText(payload());
-        document.querySelector("#copy").textContent = "\uBCF5\uC0AC\uD588\uC2B5\uB2C8\uB2E4";
-      } catch (e) {
-        document.querySelector("#copy").textContent = "\uBCF5\uC0AC\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4";
-      }
+      document.querySelector("#name").focus();
     });
   }
 
@@ -1221,23 +1277,42 @@
       return [...suggest.querySelectorAll("[data-option]")];
     }
     function paintHome() {
-      document.querySelector("#concerns").innerHTML = concerns.map(
-        (item) => `<a class="card concern" href="${concernHref(item)}">
-        <span class="concern__bar"></span>
-        <span class="tone">${icon(item.icon)}</span>
-        <h3>${esc(item.title)}</h3>
-        <p>${esc(item.text)}</p>
-        <span class="card__go">\uC194\uB8E8\uC158 \uBCF4\uAE30 \u2192</span>
-      </a>`
-      ).join("");
+      document.querySelector("#concerns").innerHTML = concerns.map((item) => {
+        const see = concernHref(item);
+        const ask = consultHref({
+          category: item.category,
+          concern: item.title,
+          q: item.query,
+          from: "home"
+        });
+        return `<article class="card concern">
+        <a class="concern__main" href="${see}">
+          <span class="concern__bar"></span>
+          <span class="tone">${icon(item.icon)}</span>
+          <h3>${esc(item.title)}</h3>
+          <p>${esc(item.text)}</p>
+        </a>
+        <div class="card__actions">
+          <a class="card__go" href="${see}">\uC194\uB8E8\uC158 \uBCF4\uAE30 \u2192</a>
+          <a class="card__go" href="${ask}">\uC774 \uACE0\uBBFC\uC73C\uB85C \uC0C1\uB2F4</a>
+        </div>
+      </article>`;
+      }).join("");
       document.querySelector("#categories").innerHTML = categories.map((category) => {
         const count = servicesIn(category.id).length;
-        return `<a class="card cat" href="index.html?cat=${category.id}">
-        <span class="tone">${icon(category.icon)}</span>
-        <h3>${esc(category.name)}</h3>
-        <span class="cat__count">\uC11C\uBE44\uC2A4 ${count}\uAC1C</span>
-        <span class="card__go">\uC11C\uBE44\uC2A4 \uBCF4\uAE30 \u2192</span>
-      </a>`;
+        const see = `index.html?cat=${category.id}`;
+        const ask = consultHref({ category: category.id, from: "home" });
+        return `<article class="card cat">
+        <a class="cat__main" href="${see}">
+          <span class="tone">${icon(category.icon)}</span>
+          <h3>${esc(category.name)}</h3>
+          <span class="cat__count">\uC11C\uBE44\uC2A4 ${count}\uAC1C</span>
+        </a>
+        <div class="card__actions">
+          <a class="card__go" href="${see}">\uC11C\uBE44\uC2A4 \uBCF4\uAE30 \u2192</a>
+          <a class="card__go" href="${ask}">\uC774 \uBD84\uB958\uB85C \uC0C1\uB2F4</a>
+        </div>
+      </article>`;
       }).join("");
       document.querySelector("#partners").innerHTML = partners.map(
         (item) => `<article class="card partner">
@@ -1250,14 +1325,19 @@
         (item) => `<div class="card logo-slot"><span>\uB85C\uACE0 \uC790\uB9AC</span><strong>${esc(item.company)}</strong></div>`
       ).join("");
       document.querySelector("#cases").innerHTML = cases.slice(0, 3).map(
-        (item) => `<a class="card case" href="cases.html#${item.id}">
-        <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC</div>
-        <div class="case__body">
-          <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc(item.company)}</p>
-          <h3>${esc(item.quote)}</h3>
-          <span class="card__go">\uC778\uD130\uBDF0 \uC77D\uAE30 \u2192</span>
+        (item) => `<article class="card case">
+        <a class="case__link" href="cases.html#${item.id}">
+          <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC</div>
+          <div class="case__body">
+            <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc(item.company)}</p>
+            <h3>${esc(item.quote)}</h3>
+          </div>
+        </a>
+        <div class="card__actions case__actions">
+          <a class="card__go" href="cases.html#${item.id}">\uC778\uD130\uBDF0 \uC77D\uAE30 \u2192</a>
+          <a class="card__go" href="${consultHref({ q: item.company, from: "cases" })}">\uC774 \uC0AC\uB840\uCC98\uB7FC \uC0C1\uB2F4</a>
         </div>
-      </a>`
+      </article>`
       ).join("");
       document.querySelector("#examples").innerHTML = examples.map((word) => `<button class="chip" type="button" data-example="${esc(word)}">${esc(word)}</button>`).join("");
     }
@@ -1315,6 +1395,17 @@
       } else {
         title.innerHTML = `\uC804\uCCB4 \uC11C\uBE44\uC2A4 <em>${rows.length}\uAC74</em>`;
       }
+      const ask = consultHref({
+        q: state.query,
+        category: state.category,
+        from: "search"
+      });
+      const resultsCta = document.querySelector("#results-cta");
+      const helpLink = document.querySelector("#results-help-link");
+      if (resultsCta) {
+        resultsCta.innerHTML = `<a href="${ask}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a>`;
+      }
+      if (helpLink) helpLink.href = ask;
       const chips = [{ id: "", name: "\uC804\uCCB4" }, ...categories];
       document.querySelector("#filters").innerHTML = chips.map((chip) => {
         const onChip = state.showAll || state.query ? chip.id === state.category : chip.id === (state.category || "");
@@ -1326,7 +1417,7 @@
         list.innerHTML = `<div class="empty">
       <h3>\u2018${esc(state.query)}\u2019\uC5D0 \uB9DE\uB294 \uC11C\uBE44\uC2A4\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h3>
       <p>\uB2E4\uB978 \uB9D0\uB85C \uAC80\uC0C9\uD558\uAC70\uB098, \uACE0\uBBFC\uB9CC \uB0A8\uACA8 \uC8FC\uC154\uB3C4 \uB429\uB2C8\uB2E4.</p>
-      <a class="btn btn--solid" href="contact.html?q=${encodeURIComponent(state.query)}">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
+      <a class="btn btn--solid" href="${ask}">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
     </div>`;
       } else if (!rows.length) {
         list.innerHTML = `<div class="empty">
@@ -1337,14 +1428,24 @@
       } else {
         list.innerHTML = rows.map((service) => {
           const category = categories.find((item) => item.id === service.category);
-          return `<a class="result" href="service.html?id=${encodeURIComponent(service.id)}">
-          <div>
+          const detail = `service.html?id=${encodeURIComponent(service.id)}`;
+          const talk = consultHref({
+            service: service.id,
+            category: service.category,
+            q: state.query,
+            from: "search"
+          });
+          return `<article class="result">
+          <a class="result__main" href="${detail}">
             <h3>${esc(service.name)}</h3>
             <p>${esc(service.summary)}</p>
-          </div>
+          </a>
           <span class="pill">${esc((category == null ? void 0 : category.short) || "")}</span>
-          <span class="btn btn--line">\uC790\uC138\uD788 \u2192</span>
-        </a>`;
+          <div class="result__actions">
+            <a class="btn btn--line" href="${detail}">\uC790\uC138\uD788 \u2192</a>
+            <a class="btn btn--solid" href="${talk}">\uC774 \uC11C\uBE44\uC2A4 \uC0C1\uB2F4\uD558\uAE30</a>
+          </div>
+        </article>`;
         }).join("");
       }
       results.scrollIntoView({ block: "start" });
@@ -1369,7 +1470,8 @@
       </a>`;
       }).join("");
       const emptyNote = state.options.length ? "" : `<p class="suggest__item" style="cursor:default">\uBC14\uB85C \uC5F0\uACB0\uD560 \uC11C\uBE44\uC2A4\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. Enter\uB85C \uC804\uCCB4 \uACB0\uACFC\uB97C \uD655\uC778\uD558\uC138\uC694.</p>`;
-      suggest.innerHTML = `${emptyNote}${items}<button class="suggest__all" type="button" data-option="all">Enter \uB610\uB294 \uAC80\uC0C9 \uBC84\uD2BC \u2192 \u300C${esc(input.value.trim())}\u300D \uC804\uCCB4 \uACB0\uACFC \uBCF4\uAE30</button>`;
+      const typed = input.value.trim();
+      suggest.innerHTML = `${emptyNote}${items}<button class="suggest__all" type="button" data-option="all">Enter \uB610\uB294 \uAC80\uC0C9 \uBC84\uD2BC \u2192 \u300C${esc(typed)}\u300D \uC804\uCCB4 \uACB0\uACFC \uBCF4\uAE30</button><a class="suggest__ask" href="${consultHref({ q: typed, from: "search" })}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a>`;
       suggest.hidden = false;
       box.classList.add("is-open");
       input.setAttribute("aria-expanded", "true");
@@ -1392,6 +1494,12 @@
       node.id = node.id || `suggest-opt-${next}`;
       input.setAttribute("aria-activedescendant", node.id);
     }
+    function syncHeroConsult() {
+      const link = document.querySelector("#hero-consult");
+      if (!link) return;
+      const typed = input.value.trim();
+      link.href = consultHref({ q: typed, from: "home" });
+    }
     function runSearch(query) {
       state.query = query.trim();
       state.showAll = false;
@@ -1401,6 +1509,7 @@
       box.classList.remove("is-open");
       input.setAttribute("aria-expanded", "false");
       syncClear();
+      syncHeroConsult();
       writeUrl();
       renderResults();
     }
@@ -1416,6 +1525,7 @@
     });
     input.addEventListener("input", () => {
       syncClear();
+      syncHeroConsult();
       openSuggest(searchServices(services, input.value));
     });
     input.addEventListener("keydown", (event) => {
@@ -1461,6 +1571,7 @@
       }
     });
     readUrl();
+    syncHeroConsult();
     if (!hasResultsMode()) results.hidden = true;
   }
 
@@ -1495,16 +1606,22 @@
       ).join("")}</ul>` : ""}
         ${mates.length ? `<h2>\uAC19\uC740 \uBB36\uC74C</h2><ul class="point-list">${mates.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a> \xB7 ${esc(item.summary)}</li>`).join("")}</ul>` : ""}
         <div class="form-actions">
-          <a class="btn btn--solid" href="contact.html?service=${encodeURIComponent(service.id)}">\uC774 \uC11C\uBE44\uC2A4\uB85C \uC0C1\uB2F4 \uC2E0\uCCAD</a>
+          <a class="btn btn--solid" href="${consultHref({ service: service.id, category: category.id, from: "service" })}">\uC774 \uC11C\uBE44\uC2A4 \uC0C1\uB2F4\uD558\uAE30</a>
           ${service.url ? `<a class="btn btn--line" href="${esc(service.url)}" target="_blank" rel="noopener noreferrer">\uAE30\uC874 \uC548\uB0B4 \uD398\uC774\uC9C0</a>` : ""}
         </div>
       </article>
       <aside class="card detail__side">
         <h2>\uAC19\uC740 \uBD84\uB958</h2>
         <div class="side-links">
-          ${related.map((item) => `<a href="service.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>`).join("")}
+          ${related.map(
+        (item) => `<div class="side-row">
+                <a href="service.html?id=${encodeURIComponent(item.id)}">${esc(item.name)}</a>
+                <a href="${consultHref({ service: item.id, category: item.category, from: "service" })}">\uC774 \uC11C\uBE44\uC2A4 \uC0C1\uB2F4\uD558\uAE30</a>
+              </div>`
+      ).join("")}
           <a href="index.html?cat=${category.id}">${esc(category.name)} \uC804\uCCB4 \uBCF4\uAE30</a>
         </div>
+        <p class="choice-cta"><a href="${consultHref({ category: category.id, from: "service" })}">\uACE0\uB974\uAE30 \uC5B4\uB835\uB2E4\uBA74 \uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD \u2192</a></p>
       </aside>
     </div>`;
     }
