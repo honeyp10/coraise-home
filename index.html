@@ -27,7 +27,7 @@
           <span class="chips__label">검색 예시</span>
           <span id="examples"></span>
         </div>
-        <p class="hero__assist"><a href="contact.html">찾기 어렵다면 무료 상담 신청 →</a></p>
+        <p class="hero__assist"><a id="hero-consult" href="contact.html?from=home">찾기 어렵다면 무료 상담 신청 →</a></p>
       </section>
 
       <div id="home-sections">
@@ -40,6 +40,7 @@
               </div>
             </div>
             <div class="concern-grid" id="concerns"></div>
+            <p class="choice-cta"><a href="contact.html?from=home">고르기 어렵다면 무료 상담 신청 →</a></p>
           </div>
         </section>
 
@@ -53,6 +54,7 @@
               <a class="link-quiet" href="index.html?all=1">전체 서비스 한눈에 보기 →</a>
             </div>
             <div class="cat-grid" id="categories"></div>
+            <p class="choice-cta"><a href="contact.html?from=home">고르기 어렵다면 무료 상담 신청 →</a></p>
           </div>
         </section>
 
@@ -79,6 +81,7 @@
             </div>
             <div class="logo-row" id="logos"></div>
             <div class="case-grid" id="cases"></div>
+            <p class="choice-cta"><a href="contact.html?from=cases">어떤 사례가 가까운지 모르겠다면 무료 상담 신청 →</a></p>
           </div>
         </section>
 
@@ -94,13 +97,14 @@
       <section class="section results wrap" id="results" hidden>
         <h2 class="results__title" id="results-title"></h2>
         <div class="filter-row" id="filters"></div>
+        <p class="choice-cta" id="results-cta"></p>
         <div class="card result-sheet" id="result-list"></div>
         <div class="card results__help">
           <div>
             <strong>찾는 서비스가 없나요?</strong>
             <p>고민을 남겨 주시면 맞는 서비스를 안내하는 상담으로 연결됩니다.</p>
           </div>
-          <a class="btn btn--solid" href="contact.html">무료 상담 신청 →</a>
+          <a class="btn btn--solid" id="results-help-link" href="contact.html?from=search">무료 상담 신청 →</a>
         </div>
       </section>
     </main>
