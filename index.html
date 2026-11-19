@@ -96,7 +96,15 @@
 
       <section class="section results wrap" id="results" hidden>
         <h2 class="results__title" id="results-title"></h2>
-        <div class="filter-row" id="filters"></div>
+        <div class="result-toolbar">
+          <div class="filter-row" id="filters"></div>
+          <label class="sort">정렬
+            <select id="sort">
+              <option value="recommend">추천순</option>
+              <option value="name">이름순</option>
+            </select>
+          </label>
+        </div>
         <p class="choice-cta" id="results-cta"></p>
         <div class="card result-sheet" id="result-list"></div>
         <div class="card results__help">
