@@ -1317,6 +1317,35 @@
     }
     bindMenus(header);
     installInquiry();
+    bindFabAway();
+  }
+  function bindFabAway() {
+    const fab = document.querySelector("[data-fab]");
+    if (!fab) return;
+    const targets = [
+      document.querySelector(".banner"),
+      document.querySelector("[data-footer]"),
+      document.querySelector("footer"),
+      document.querySelector(".form-actions"),
+      document.querySelector(".results__help"),
+      document.querySelector(".footer__action")
+    ].filter(Boolean);
+    if (!targets.length) return;
+    const update = () => {
+      const vh = window.innerHeight || 0;
+      const away = targets.some((node) => {
+        const r = node.getBoundingClientRect();
+        return r.bottom > 0 && r.top < vh + 80;
+      });
+      fab.classList.toggle("is-away", away);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(update, { threshold: 0, rootMargin: "0px 0px 80px 0px" });
+      targets.forEach((node) => io.observe(node));
+    }
   }
   function bindMenus(header) {
     const mega = header.querySelector(".mega");
@@ -1561,23 +1590,39 @@
           name: "Fortinet Specialized \uD30C\uD2B8\uB108",
           badge: "\uACF5\uC2DD \uD30C\uD2B8\uB108\uC2ED",
           headline: "\uD3EC\uD2F0\uB137\uC774 \uC778\uC815\uD55C \uBCF4\uC548\xB7\uB124\uD2B8\uC6CC\uD06C \uC804\uBB38 \uD30C\uD2B8\uB108",
-          body: "\uCF54\uB808\uC774\uC988\uB294 \uD3EC\uD2F0\uB137(Fortinet) Specialized \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4. \uD3EC\uD2F0\uB137\uC774 \uC778\uC99D\uD55C \uBCF4\uC548\xB7\uB124\uD2B8\uC6CC\uD06C \uD30C\uD2B8\uB108\uB85C \uC7A5\uBE44 \uB3C4\uC785\uACFC \uAD6C\uCD95\uC744 \uC548\uB0B4\uD569\uB2C8\uB2E4."
+          body: "\uCF54\uB808\uC774\uC988\uB294 \uD3EC\uD2F0\uB137(Fortinet) Specialized \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4. \uD3EC\uD2F0\uB137\uC774 \uC778\uC99D\uD55C \uBCF4\uC548\xB7\uB124\uD2B8\uC6CC\uD06C \uD30C\uD2B8\uB108\uB85C \uC7A5\uBE44 \uB3C4\uC785\uACFC \uAD6C\uCD95\uC744 \uC548\uB0B4\uD569\uB2C8\uB2E4.",
+          media: "./assets/partners/fortinet-award-2022.svg",
+          mediaAlt: "Fortinet 2022 Best Fabric Sales \uC218\uC0C1",
+          mediaCaption: "Fortinet 2022 Best Fabric Sales \uC218\uC0C1",
+          mediaKind: "photo award"
         },
         {
           name: "Okta \uACF5\uC2DD \uD30C\uD2B8\uB108",
           badge: "\uACF5\uC2DD \uD30C\uD2B8\uB108\uC2ED",
           headline: "Okta\uAC00 \uC778\uC815\uD55C \uACC4\uC815\xB7\uC778\uC99D \uACF5\uC2DD \uD30C\uD2B8\uB108",
-          body: "\uCF54\uB808\uC774\uC988\uB294 Okta \uACF5\uC2DD \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4. \uC9C1\uC6D0 \uACC4\uC815\uACFC \uB85C\uADF8\uC778\uC744 \uD55C\uACF3\uC5D0\uC11C \uB2E4\uB8E8\uB3C4\uB85D Okta \uAD6C\uCD95\uC744 \uC548\uB0B4\uD569\uB2C8\uB2E4."
+          body: "\uCF54\uB808\uC774\uC988\uB294 Okta \uACF5\uC2DD \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4. \uC9C1\uC6D0 \uACC4\uC815\uACFC \uB85C\uADF8\uC778\uC744 \uD55C\uACF3\uC5D0\uC11C \uB2E4\uB8E8\uB3C4\uB85D Okta \uAD6C\uCD95\uC744 \uC548\uB0B4\uD569\uB2C8\uB2E4.",
+          media: "./assets/partners/okta-logo.svg",
+          mediaAlt: "Okta",
+          mediaKind: "logo"
         },
         {
           name: "GS\uC778\uC99D 1\uB4F1\uAE09 ADPaC",
           badge: "\uACF5\uC778 \uC778\uC99D",
           headline: "\uC9C1\uC811 \uB9CC\uB4E0 AD \uC194\uB8E8\uC158, GS\uC778\uC99D 1\uB4F1\uAE09",
-          body: "\uCF54\uB808\uC774\uC988\uAC00 \uB9CC\uB4E0 AD \uAD00\uB9AC \uC194\uB8E8\uC158 ADPaC\uB294 \uD55C\uAD6D\uC815\uBCF4\uD1B5\uC2E0\uAE30\uC220\uD611\uD68C(TTA) GS\uC778\uC99D 1\uB4F1\uAE09\uC785\uB2C8\uB2E4. \uAE30\uB2A5 \uC801\uD569\uC131, \uC131\uB2A5 \uD6A8\uC728\uC131, \uC0AC\uC6A9\uC131, \uBCF4\uC548\uC131\uC744 \uD3C9\uAC00\uD55C \uC778\uC99D\uC785\uB2C8\uB2E4."
+          body: "\uCF54\uB808\uC774\uC988\uAC00 \uB9CC\uB4E0 AD \uAD00\uB9AC \uC194\uB8E8\uC158 ADPaC\uB294 \uD55C\uAD6D\uC815\uBCF4\uD1B5\uC2E0\uAE30\uC220\uD611\uD68C(TTA) GS\uC778\uC99D 1\uB4F1\uAE09\uC785\uB2C8\uB2E4. \uAE30\uB2A5 \uC801\uD569\uC131, \uC131\uB2A5 \uD6A8\uC728\uC131, \uC0AC\uC6A9\uC131, \uBCF4\uC548\uC131\uC744 \uD3C9\uAC00\uD55C \uC778\uC99D\uC785\uB2C8\uB2E4.",
+          media: "./assets/partners/gs-cert-adpac.svg",
+          mediaAlt: "ADPaC GS\uC778\uC99D 1\uB4F1\uAE09 \uD68D\uB4DD",
+          mediaCaption: "ADPaC GS\uC778\uC99D 1\uB4F1\uAE09 \uD68D\uB4DD",
+          mediaKind: "photo cover"
         }
       ];
       document.querySelector("#partners").innerHTML = reasons.map(
-        (item) => `<article class="card partner v18-reason">
+        (item) => {
+          const kinds = (item.mediaKind || "photo").split(/\s+/).filter(Boolean).map((k) => `v21-media--${k}`).join(" ");
+          const cap = item.mediaCaption ? `<p class="v21-media__cap">${esc2(item.mediaCaption)}</p>` : "";
+          const media = item.media ? `<div class="v21-media ${kinds}"><img src="${esc2(item.media)}" alt="${esc2(item.mediaAlt || "")}" />${cap}</div>` : "";
+          return `<article class="card partner v18-reason">
+        ${media}
         <span class="tone">${icon("check")}</span>
         <div class="v18-reason__meta">
           <p class="v18-reason__name">${esc2(item.name)}</p>
@@ -1585,7 +1630,8 @@
         </div>
         <h3>${esc2(item.headline)}</h3>
         <p>${esc2(item.body)}</p>
-      </article>`
+      </article>`;
+        }
       ).join("");
       const logos = document.querySelector("#logos");
       if (logos) {
@@ -1706,8 +1752,13 @@
         list.innerHTML = rows.map((service) => {
           const category = categories.find((item) => item.id === service.category);
           const detail = `service.html?id=${encodeURIComponent(service.id)}`;
+          const logo = service.detail && service.detail.logo;
+          const initial = String(service.name || "?").trim().charAt(0);
+          const thumb = logo
+            ? `<span class="hit__thumb hit__thumb--logo"><img src="${esc2(logo)}" alt="" /></span>`
+            : `<span class="hit__thumb" aria-hidden="true"><span class="hit__initial">${esc2(initial)}</span></span>`;
           return `<a class="hit" href="${detail}">
-          <span class="hit__thumb" aria-hidden="true"><span>\uC774\uBBF8\uC9C0 \uC790\uB9AC</span><strong>${esc2(service.name)}</strong></span>
+          ${thumb}
           <span class="hit__body">
             <strong class="hit__name">${esc2(service.name)}</strong>
             <span class="hit__sub">${esc2(service.title)}</span>
@@ -1971,8 +2022,8 @@
           </span>
         </a>
       </aside>` : "";
-    const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : `<div class="product__logo">\uB85C\uACE0 \uC790\uB9AC<br /><strong>${esc2(service.name)}</strong></div>`;
-    const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : `<div class="product__photo">\uC81C\uD488 \uC774\uBBF8\uC9C0 \uC790\uB9AC</div>`;
+    const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : `<div class="product__logo"><strong>${esc2(service.name)}</strong></div>`;
+    const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : `<div class="product__photo"><span class="hit__initial">${esc2(String(service.name || "?").trim().charAt(0))}</span></div>`;
     main.innerHTML = `
     <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
     <section class="product">
