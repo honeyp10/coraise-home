@@ -1669,7 +1669,41 @@
       writeUrl();
       renderResults({ scroll: true });
     }
+    function initFindTabs() {
+      const tabs = [...document.querySelectorAll("[data-find-tab]")];
+      const panels = {
+        concern: document.getElementById("panel-concern"),
+        service: document.getElementById("panel-service")
+      };
+      function select(id, focusTab) {
+        tabs.forEach((tab) => {
+          const on = tab.dataset.findTab === id;
+          tab.classList.toggle("is-on", on);
+          tab.setAttribute("aria-selected", on ? "true" : "false");
+          tab.tabIndex = on ? 0 : -1;
+          if (on && focusTab) tab.focus();
+        });
+        Object.entries(panels).forEach(([key, panel]) => {
+          if (panel) panel.hidden = key !== id;
+        });
+      }
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => select(tab.dataset.findTab, false));
+        tab.addEventListener("keydown", (event) => {
+          const order = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+          if (!order.includes(event.key)) return;
+          event.preventDefault();
+          let next = index;
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % tabs.length;
+          if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + tabs.length) % tabs.length;
+          if (event.key === "Home") next = 0;
+          if (event.key === "End") next = tabs.length - 1;
+          select(tabs[next].dataset.findTab, true);
+        });
+      });
+    }
     paintHome();
+    initFindTabs();
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const current = optionButtons()[state2.active];

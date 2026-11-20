@@ -462,6 +462,33 @@ body:has(.mega:not([hidden])) .header__bar {
 }
 .section__head p, .sub { margin: 0; color: var(--muted); }
 .link-quiet { font-weight: 700; text-decoration: none; white-space: nowrap; }
+.find-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 24px;
+  background: var(--bg-deep);
+  border-radius: 14px;
+}
+.find-tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.find-tab.is-on {
+  background: #fff;
+  color: var(--link);
+  box-shadow: 0 1px 4px rgba(28, 25, 23, 0.06);
+}
 
 .concern-grid, .cat-grid, .partner-grid, .case-grid, .logo-row {
   display: grid;
@@ -928,6 +955,9 @@ fieldset.field legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
     flex-direction: column;
     align-items: stretch;
   }
+  .find-tabs { width: 100%; }
+  .find-tab { flex: 1; padding: 0 12px; text-align: center; }
+  .concern-grid, .cat-grid { grid-template-columns: 1fr; }
   .hit { grid-template-columns: 84px 1fr auto; gap: 12px; }
   .banner .btn, .results__help .btn { width: 100%; }
   .fab span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
