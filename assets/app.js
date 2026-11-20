@@ -854,6 +854,46 @@
       image: "./assets/clients/case-bagel.svg",
       url: "https://coraise.kr/bagelcode/",
       categories: ["network", "care"]
+    },
+    {
+      id: "channel",
+      company: "\uCC44\uB110\uCF54\uD37C\uB808\uC774\uC158",
+      quote: "SMB \uBE44\uC988\uB2C8\uC2A4\uC758 \uD575\uC2EC, \uCC44\uB110\uD1A1",
+      summary: "\uCC44\uB110\uD1A1\uC744 \uC6B4\uC601\uD558\uB294 \uCC44\uB110\uCF54\uD37C\uB808\uC774\uC158\uC774 \uB124\uD2B8\uC6CC\uD06C\uC640 \uBCF4\uC548 \uC7A5\uBE44 \uB3C4\uC785\uC744 \uCF54\uB808\uC774\uC988\uC640 \uD568\uAED8\uD55C \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.03",
+      image: "./assets/clients/case-channel.svg",
+      url: "https://coraise.kr/channelcorporation/",
+      categories: ["network"]
+    },
+    {
+      id: "isoi",
+      company: "\uC544\uC774\uC18C\uC774",
+      quote: "\uB04A\uAE40\uC5C6\uB294 \uBB34\uC120 \uAD6C\uCD95, \uC544\uC774\uC18C\uC774",
+      summary: "\uC2E0\uC0AC\uC625\uACFC \uB9E4\uC7A5\uC744 \uBB34\uC120 \uB124\uD2B8\uC6CC\uD06C\uB85C \uAD6C\uCD95\uD55C \uC544\uC774\uC18C\uC774\uC758 \uCF54\uB808\uC774\uC988 \uC11C\uBE44\uC2A4 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.02",
+      image: "./assets/clients/case-isoi.svg",
+      url: "https://coraise.kr/isoi/",
+      categories: ["network", "security"]
+    },
+    {
+      id: "olive",
+      company: "\uC62C\uB9AC\uBE0C\uC778\uD130\uB0B4\uC154\uB110",
+      quote: "\uAE00\uB85C\uBC8C K\uBDF0\uD2F0, \uC62C\uB9AC\uBE0C\uC778\uD130\uB0B4\uC154\uB110",
+      summary: "\uB124\uD2B8\uC6CC\uD06C\uC640 NAS\uB97C \uCF54\uB808\uC774\uC988\uC640 \uD568\uAED8 \uAD6C\uCD95\u00B7\uC6B4\uC601\uD558\uB294 \uC62C\uB9AC\uBE0C\uC778\uD130\uB0B4\uC154\uB110\uC758 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.01",
+      image: "./assets/clients/case-olive.svg",
+      url: "https://coraise.kr/oliveinternational/",
+      categories: ["network"]
+    },
+    {
+      id: "ctrl9",
+      company: "\uCEE8\uD2B8\uB864\uB098\uC778",
+      quote: "\uAC8C\uC784\uD68C\uC0AC\uC5D0\uC11C \uCD1D\uBB34\uB85C \uC0B4\uC544\uB0A8\uB294 \uBC95.",
+      summary: "\uC0AC\uC625 \uB124\uD2B8\uC6CC\uD06C\uC640 \uACC4\uC815\u00B7\uC18C\uD504\uD2B8\uC6E8\uC5B4\uAE4C\uC9C0 \uCF54\uB808\uC774\uC988\uC640 \uD568\uAED8\uD55C \uCEE8\uD2B8\uB864\uB098\uC778\uC758 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.01",
+      image: "./assets/clients/case-ctrl9.svg",
+      url: "https://coraise.kr/ctrl9/",
+      categories: ["network", "account", "software", "hardware"]
     }
   ];
   var examples = [
@@ -1447,22 +1487,63 @@
   }
 
   // js/cases.js
-  function initCases() {
-    renderChrome();
-    document.querySelector("#case-list").innerHTML = cases.map(
-      (item) => `<article class="card case" id="${esc2(item.id)}">
-      <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
-      <div class="case__body">
-        <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)}</p>
-        <h3>${esc2(item.quote)}</h3>
-        <p>${esc2(item.summary)}</p>
-        <div class="card__actions">
+  function caseCardHtml(item, opts = {}) {
+    const category = item.categories.map((id) => categoryById(id)).find(Boolean);
+    const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
+    const actions = opts.home ? "" : `<div class="card__actions">
           <a class="card__go" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">coraise.kr\uC5D0\uC11C \uBCF4\uAE30 \u2192</a>
           <a class="card__go" href="${consultHref({ q: item.company, from: "cases" })}">\uC774 \uC0AC\uB840\uCC98\uB7FC \uC0C1\uB2F4</a>
-        </div>
-      </div>
-    </article>`
-    ).join("");
+        </div>`;
+    const inner = `<div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
+      <div class="case__body">
+        <p class="case__kicker"><strong>${esc2(item.company)}</strong>${tag}</p>
+        <h3>${esc2(item.quote)}</h3>
+        <p>${esc2(item.summary)}</p>
+        ${actions}
+      </div>`;
+    if (opts.home) {
+      return `<article class="card case v22-case">
+        <a class="case__link" href="cases.html#${item.id}">${inner}</a>
+      </article>`;
+    }
+    return `<article class="card case" id="${esc2(item.id)}">${inner}</article>`;
+  }
+  function initCases() {
+    renderChrome();
+    const list = document.querySelector("#case-list");
+    const filters = document.querySelector("#case-filters");
+    let active = "";
+    function renderList() {
+      const rows = active ? cases.filter((item) => item.categories.includes(active)) : cases;
+      list.innerHTML = rows.map((item) => caseCardHtml(item)).join("");
+    }
+    if (filters) {
+      const used = new Set(cases.flatMap((item) => item.categories));
+      const chips = [{ id: "", name: "\uC804\uCCB4", count: cases.length }].concat(
+        categories.filter((cat) => used.has(cat.id)).map((cat) => ({
+          id: cat.id,
+          name: cat.short || cat.name,
+          count: cases.filter((item) => item.categories.includes(cat.id)).length
+        }))
+      );
+      filters.innerHTML = chips.map((chip) => `<button class="chip${chip.id === active ? " is-on" : ""}" type="button" data-case-filter="${esc2(chip.id)}" aria-pressed="${chip.id === active ? "true" : "false"}">${esc2(chip.name)} (${chip.count})</button>`).join("");
+      filters.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-case-filter]");
+        if (!button) return;
+        active = button.dataset.caseFilter || "";
+        filters.querySelectorAll("[data-case-filter]").forEach((el) => {
+          const on = (el.dataset.caseFilter || "") === active;
+          el.classList.toggle("is-on", on);
+          el.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        renderList();
+      });
+    }
+    renderList();
+    if (location.hash) {
+      const target = document.querySelector(location.hash);
+      if (target) target.scrollIntoView({ block: "start" });
+    }
   }
 
   // js/contact.js
@@ -1633,29 +1714,22 @@
       </article>`;
         }
       ).join("");
-      const logos = document.querySelector("#logos");
-      if (logos) {
-        logos.innerHTML = cases.map(
-          (item) => `<a class="card logo-slot" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0" /><strong>${esc2(item.company)}</strong></a>`
-        ).join("");
-      }
-      const caseGrid = document.querySelector("#cases");
-      if (caseGrid) {
-        caseGrid.innerHTML = cases.slice(0, 3).map(
-          (item) => `<article class="card case">
+      const homeCases = document.querySelector("#home-cases");
+      if (homeCases) {
+        homeCases.innerHTML = cases.slice(0, 6).map((item) => {
+          const category = item.categories.map((id) => categoryById(id)).find(Boolean);
+          const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
+          return `<article class="card case v22-case">
         <a class="case__link" href="cases.html#${item.id}">
           <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
           <div class="case__body">
-            <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)}</p>
+            <p class="case__kicker"><strong>${esc2(item.company)}</strong>${tag}</p>
             <h3>${esc2(item.quote)}</h3>
+            <p>${esc2(item.summary)}</p>
           </div>
         </a>
-        <div class="card__actions case__actions">
-          <a class="card__go" href="cases.html#${item.id}">\uC778\uD130\uBDF0 \uC77D\uAE30 \u2192</a>
-          <a class="card__go" href="${consultHref({ q: item.company, from: "cases" })}">\uC774 \uC0AC\uB840\uCC98\uB7FC \uC0C1\uB2F4</a>
-        </div>
-      </article>`
-        ).join("");
+      </article>`;
+        }).join("");
       }
       document.querySelector("#examples").innerHTML = examples.map((word) => `<button class="chip" type="button" data-example="${esc2(word)}">${esc2(word)}</button>`).join("");
     }
