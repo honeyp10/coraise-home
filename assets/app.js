@@ -720,56 +720,66 @@
       category: "software"
     }
   ];
-  var partners = [
-    {
-      name: "Fortinet Specialized \uD30C\uD2B8\uB108",
-      text: "\uD3EC\uD2F0\uB137 \uBCF4\uC548\xB7\uB124\uD2B8\uC6CC\uD06C \uC7A5\uBE44\uB97C \uB2E4\uB8E8\uB294 \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4."
-    },
-    {
-      name: "Okta \uACF5\uC2DD \uD30C\uD2B8\uB108",
-      text: "\uACC4\uC815\xB7\uC778\uC99D \uC194\uB8E8\uC158 Okta\uC758 \uACF5\uC2DD \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4."
-    },
-    {
-      name: "GS\uC778\uC99D 1\uB4F1\uAE09 ADPaC",
-      text: "\uCF54\uB808\uC774\uC988 Active Directory \uAD00\uB9AC \uC194\uB8E8\uC158\uC758 \uC778\uC99D \uB4F1\uAE09\uC785\uB2C8\uB2E4."
-    }
-  ];
   var cases = [
     {
       id: "lve",
       company: "LVE\uCF54\uB9AC\uC544",
       quote: "Live, Love, Life, \uC9C4\uC815\uD55C \uAC00\uCE58\uB97C \uC804\uD558\uB2E4",
-      date: "2026.01"
+      summary: "\uC2A4\uB9C8\uD2B8\uD55C \uBB34\uC5ED \uD658\uACBD\uC744 \uC120\uB3C4\uD558\uB294 LVE\uCF54\uB9AC\uC544\uC758 \uCF54\uB808\uC774\uC988 \uC11C\uBE44\uC2A4 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2026.01",
+      image: "./assets/clients/case-lve.svg",
+      url: "https://coraise.kr/lvekorea/",
+      categories: []
     },
     {
       id: "digicap",
       company: "\uB514\uC9C0\uCEA1",
-      quote: "\uCF58\uD150\uCE20\uB294 \uC548\uC804\uD558\uAC8C, \uBC18\uBCF5 \uC5C5\uBB34\uB294 \uC790\uB3D9\uC73C\uB85C.",
-      date: "2025.12"
+      quote: "\uCF58\uD150\uCE20\uB294 \uC548\uC804\uD558\uAC8C, \uBC18\uBCF5 \uC5C5\uBB34\uB294 \uC790\uB3D9\uC73C\uB85C",
+      summary: "\uBC29\uC1A1 \uBCF4\uC548 \uC194\uB8E8\uC158\uACFC \uBBF8\uB514\uC5B4 \uAE30\uC220\uC744 \uC120\uB3C4\uD558\uB294 \uB514\uC9C0\uCEA1\uC758 \uB124\uD2B8\uC6CC\uD06C \uC11C\uBE44\uC2A4 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.12",
+      image: "./assets/clients/case-digicap.svg",
+      url: "https://coraise.kr/digicap/",
+      categories: ["network"]
     },
     {
       id: "ant",
       company: "\uC564\uD2B8\uC2A4\uD29C\uB514\uC624",
       quote: "\uC624\uB9AC\uC9C0\uB110 IP\uB85C \uC644\uC131\uD558\uB294 \uC624\uB798\uB3C4\uB85D \uC0AC\uB791 \uBC1B\uB294 \uC6F9\uD230",
-      date: "2025.11"
+      summary: "\uC6F9\uD230 \uC81C\uC791\uC0AC \uC564\uD2B8\uC2A4\uD29C\uB514\uC624\uC758 \uB124\uD2B8\uC6CC\uD06C \uC11C\uBE44\uC2A4 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.11",
+      image: "./assets/clients/case-ant.svg",
+      url: "https://coraise.kr/antstudio/",
+      categories: ["network"]
     },
     {
       id: "dsrv",
       company: "DSRV",
       quote: "\uBE14\uB85D\uCCB4\uC778 \uC778\uD504\uB77C\uB85C \uC548\uC815\uC801\uC778 \uAE08\uC735 \uC11C\uBE44\uC2A4",
-      date: "2025.09"
+      summary: "\uAE08\uC735 \uC778\uD504\uB77C \uC804\uBB38 \uAE30\uC5C5 DSRV\uC758 \uB124\uD2B8\uC6CC\uD06C \uC11C\uBE44\uC2A4 \uC774\uC6A9 \uD6C4\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.09",
+      image: "./assets/clients/case-dsrv.svg",
+      url: "https://coraise.kr/dsrv/",
+      categories: ["network"]
     },
     {
       id: "neo",
       company: "\uB124\uC624\uC774\uBBA8\uD14D",
       quote: "\uBA74\uC5ED\uCE58\uB8CC\uC81C \uAC1C\uBC1C, \uC548\uC815\uC801\uC778 \uB124\uD2B8\uC6CC\uD06C\uB85C",
-      date: "2025.06"
+      summary: "\uC548\uC815\uC801\uC778 \uB124\uD2B8\uC6CC\uD06C \uC784\uB300 \uC11C\uBE44\uC2A4\uB97C \uC774\uC6A9 \uC911\uC778 \uB124\uC624\uC774\uBBA8\uD14D\uC758 \uC774\uC57C\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.06",
+      image: "./assets/clients/case-neo.svg",
+      url: "https://coraise.kr/neoimmunetech/",
+      categories: ["network", "care"]
     },
     {
       id: "bagel",
       company: "\uBCA0\uC774\uAE00\uCF54\uB4DC",
-      quote: "\uAC8C\uC784 \uD68C\uC0AC\uC5D0\uC11C \uB04A\uAE40 \uC5C6\uB294 \uB124\uD2B8\uC6CC\uD06C\uB97C",
-      date: "2025.04"
+      quote: "\uAC8C\uC784 \uD68C\uC0AC\uC5D0\uC11C \uB04A\uAE40\uC5C6\uB294 \uB124\uD2B8\uC6CC\uD06C\uB97C",
+      summary: "\uAC8C\uC784 \uD68C\uC0AC\uC758 \uB04A\uAE40\uC5C6\uB294 \uB124\uD2B8\uC6CC\uD06C, \uC720\uC9C0\uBCF4\uC218 \uACE0\uAC1D\uC0AC \uBCA0\uC774\uAE00\uCF54\uB4DC\uC758 \uC774\uC57C\uAE30\uC785\uB2C8\uB2E4.",
+      date: "2025.04",
+      image: "./assets/clients/case-bagel.svg",
+      url: "https://coraise.kr/bagelcode/",
+      categories: ["network", "care"]
     }
   ];
   var examples = [
@@ -1338,13 +1348,13 @@
     renderChrome();
     document.querySelector("#case-list").innerHTML = cases.map(
       (item) => `<article class="card case" id="${esc2(item.id)}">
-      <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC<br />${esc2(item.company)}</div>
+      <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
       <div class="case__body">
-        <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)} \xB7 ${esc2(item.date)}</p>
+        <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)}</p>
         <h3>${esc2(item.quote)}</h3>
-        <p>\uC778\uD130\uBDF0 \uC804\uBB38\uC740 \uCF54\uB808\uC774\uC988 \uACF5\uC2DD \uC0AC\uC774\uD2B8\uC758 \uACE0\uAC1D \uC0AC\uB840\uC5D0 \uC788\uC2B5\uB2C8\uB2E4.</p>
+        <p>${esc2(item.summary)}</p>
         <div class="card__actions">
-          <a class="card__go" href="https://coraise.kr/" target="_blank" rel="noopener noreferrer">coraise.kr\uC5D0\uC11C \uBCF4\uAE30 \u2192</a>
+          <a class="card__go" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">coraise.kr\uC5D0\uC11C \uBCF4\uAE30 \u2192</a>
           <a class="card__go" href="${consultHref({ q: item.company, from: "cases" })}">\uC774 \uC0AC\uB840\uCC98\uB7FC \uC0C1\uB2F4</a>
         </div>
       </div>
@@ -1472,20 +1482,44 @@
         </div>
       </article>`;
       }).join("");
-      document.querySelector("#partners").innerHTML = partners.map(
-        (item) => `<article class="card partner">
+      const reasons = [
+        {
+          name: "Fortinet Specialized \uD30C\uD2B8\uB108",
+          badge: "\uACF5\uC2DD \uD30C\uD2B8\uB108\uC2ED",
+          headline: "\uD3EC\uD2F0\uB137\uC774 \uC778\uC815\uD55C \uBCF4\uC548\xB7\uB124\uD2B8\uC6CC\uD06C \uC804\uBB38 \uD30C\uD2B8\uB108",
+          body: "\uCF54\uB808\uC774\uC988\uB294 \uD3EC\uD2F0\uB137(Fortinet) Specialized \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4. \uD3EC\uD2F0\uB137\uC774 \uC778\uC99D\uD55C \uBCF4\uC548\xB7\uB124\uD2B8\uC6CC\uD06C \uD30C\uD2B8\uB108\uB85C \uC7A5\uBE44 \uB3C4\uC785\uACFC \uAD6C\uCD95\uC744 \uC548\uB0B4\uD569\uB2C8\uB2E4."
+        },
+        {
+          name: "Okta \uACF5\uC2DD \uD30C\uD2B8\uB108",
+          badge: "\uACF5\uC2DD \uD30C\uD2B8\uB108\uC2ED",
+          headline: "Okta\uAC00 \uC778\uC815\uD55C \uACC4\uC815\xB7\uC778\uC99D \uACF5\uC2DD \uD30C\uD2B8\uB108",
+          body: "\uCF54\uB808\uC774\uC988\uB294 Okta \uACF5\uC2DD \uD30C\uD2B8\uB108\uC785\uB2C8\uB2E4. \uC9C1\uC6D0 \uACC4\uC815\uACFC \uB85C\uADF8\uC778\uC744 \uD55C\uACF3\uC5D0\uC11C \uB2E4\uB8E8\uB3C4\uB85D Okta \uAD6C\uCD95\uC744 \uC548\uB0B4\uD569\uB2C8\uB2E4."
+        },
+        {
+          name: "GS\uC778\uC99D 1\uB4F1\uAE09 ADPaC",
+          badge: "\uACF5\uC778 \uC778\uC99D",
+          headline: "\uC9C1\uC811 \uB9CC\uB4E0 AD \uC194\uB8E8\uC158, GS\uC778\uC99D 1\uB4F1\uAE09",
+          body: "\uCF54\uB808\uC774\uC988\uAC00 \uB9CC\uB4E0 AD \uAD00\uB9AC \uC194\uB8E8\uC158 ADPaC\uB294 \uD55C\uAD6D\uC815\uBCF4\uD1B5\uC2E0\uAE30\uC220\uD611\uD68C(TTA) GS\uC778\uC99D 1\uB4F1\uAE09\uC785\uB2C8\uB2E4. \uAE30\uB2A5 \uC801\uD569\uC131, \uC131\uB2A5 \uD6A8\uC728\uC131, \uC0AC\uC6A9\uC131, \uBCF4\uC548\uC131\uC744 \uD3C9\uAC00\uD55C \uC778\uC99D\uC785\uB2C8\uB2E4."
+        }
+      ];
+      document.querySelector("#partners").innerHTML = reasons.map(
+        (item) => `<article class="card partner v18-reason">
         <span class="tone">${icon("check")}</span>
-        <h3>${esc2(item.name)}</h3>
-        <p>${esc2(item.text)}</p>
+        <div class="v18-reason__meta">
+          <p class="v18-reason__name">${esc2(item.name)}</p>
+          <span class="v18-badge">${esc2(item.badge)}</span>
+        </div>
+        <h3>${esc2(item.headline)}</h3>
+        <p>${esc2(item.body)}</p>
       </article>`
       ).join("");
-      document.querySelector("#logos").innerHTML = cases.map(
-        (item) => `<div class="card logo-slot"><span>\uB85C\uACE0 \uC790\uB9AC</span><strong>${esc2(item.company)}</strong></div>`
+      if (document.querySelector("#logos")) document.querySelector("#logos").innerHTML = cases.map(
+        (item) => `<a class="card logo-slot" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0" /><strong>${esc2(item.company)}</strong></a>`
       ).join("");
-      document.querySelector("#cases").innerHTML = cases.slice(0, 3).map(
+      if (document.querySelector("#cases")) document.querySelector("#cases").innerHTML = cases.slice(0, 3).map(
         (item) => `<article class="card case">
         <a class="case__link" href="cases.html#${item.id}">
-          <div class="case__shot">\uC0AC\uB840 \uC774\uBBF8\uC9C0 \xB7 \uC790\uB9AC</div>
+          <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
           <div class="case__body">
             <p class="case__kicker">\uACE0\uAC1D \uC0AC\uB840 \xB7 ${esc2(item.company)}</p>
             <h3>${esc2(item.quote)}</h3>
@@ -1805,14 +1839,27 @@
     ];
     const ask = consultHref({ service: service.id, category: category.id, from: "service" });
     const download = consultHref({ service: service.id, category: category.id, from: "download" });
+    const relatedCase = cases.find((item) => item.categories.includes(service.category));
+    const relatedHtml = relatedCase ? `<aside class="v15-related">
+        <p class="v15-related__label">\uC774 \uC11C\uBE44\uC2A4\uC640 \uAC00\uAE4C\uC6B4 \uC0AC\uB840</p>
+        <a class="v15-case v15-case--related" href="${esc2(relatedCase.url)}" target="_blank" rel="noopener noreferrer">
+          <img src="${esc2(relatedCase.image)}" alt="${esc2(relatedCase.company)} \uC778\uD130\uBDF0" />
+          <span class="v15-case__text">
+            <span class="v15-case__who"><strong>${esc2(relatedCase.company)}</strong></span>
+            <span class="v15-case__title">${esc2(relatedCase.quote)}</span>
+            <span class="v15-case__body">${esc2(relatedCase.summary)}</span>
+          </span>
+        </a>
+      </aside>` : "";
     main.innerHTML = `
     <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
     <section class="product">
       <div>
         <h1>${esc2(service.name)}</h1>
         <p class="product__sub">${esc2(service.title)}</p>
-        <p>${esc2(service.summary)}</p>
-        <div class="form-actions">
+          <p>${esc2(service.summary)}</p>
+          ${relatedHtml}
+          <div class="form-actions">
           <a class="btn btn--solid" href="${ask}">\uB3C4\uC785 \uC0C1\uB2F4\uD558\uAE30 \u2192</a>
           <a class="btn btn--line" href="${download}">\uC790\uB8CC \uB2E4\uC6B4\uB85C\uB4DC</a>
         </div>
@@ -1850,10 +1897,9 @@
     ${placeholder("ops", "\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0", service.category === "care" ? service.summary : "\uAD6C\uCD95\uACFC \uC6B4\uC601 \uBC94\uC704\uB294 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uB530\uB85C \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
     <section id="cases" class="detail-block">
       <h2>\uAD00\uB828 \uC0AC\uB840</h2>
-      <p class="note">\uACF5\uAC1C \uC778\uD130\uBDF0\uB97C \uC774 \uC11C\uBE44\uC2A4\uC5D0 \uC5F0\uACB0\uD574 \uB450\uC9C0\uB294 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC544\uB798\uB294 \uCF54\uB808\uC774\uC988\uAC00 \uACF5\uAC1C\uD55C \uACE0\uAC1D \uC0AC\uB840\uC785\uB2C8\uB2E4.</p>
-      <ul class="point-list">
-        ${cases.slice(0, 3).map((item) => `<li><a href="cases.html#${item.id}">${esc2(item.company)}</a> \xB7 ${esc2(item.quote)}</li>`).join("")}
-      </ul>
+      ${cases.filter((item) => item.categories.includes(service.category)).length ? `<ul class="point-list">${cases.filter((item) => item.categories.includes(service.category)).map(
+      (item) => `<li><a href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">${esc2(item.company)}</a> \xB7 ${esc2(item.quote)}</li>`
+    ).join("")}</ul>` : `<p class="note">\uC774 \uBD84\uB958\uC5D0 \uD574\uB2F9\uD558\uB294 \uACF5\uAC1C \uC778\uD130\uBDF0\uB294 coraise.kr\uC5D0 \uC5C6\uC5B4, \uC0AC\uB840 \uCE74\uB4DC\uB97C \uB450\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>`}
     </section>`;
   }
 
