@@ -746,7 +746,9 @@ body:has(.mega:not([hidden])) .header__bar {
   min-height: 96px;
   padding: 16px;
 }
-.product__photo { min-height: 180px; background: #f3eee8; color: var(--muted); }
+.product__photo { min-height: 180px; background: #fff; color: var(--muted); }
+.product__logo img { display: block; width: auto; max-width: 220px; height: 36px; }
+.product__photo img { display: block; width: 100%; height: auto; max-height: 220px; object-fit: contain; }
 .detail-tabs {
   position: sticky;
   top: var(--header);
@@ -773,6 +775,17 @@ body:has(.mega:not([hidden])) .header__bar {
 .feature { background: #fff; border: 1px solid #efe8e0; border-radius: 16px; padding: 18px; }
 .feature h3 { margin: 8px 0; font-size: 16px; }
 .feature p { margin: 0; color: var(--muted); }
+.feature-grid--pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.feature--glass {
+  border: 0;
+  background: #fff;
+  box-shadow:
+    inset 2px 2px 0 #fff,
+    inset -1px -2px 0 rgba(70, 66, 62, 0.14),
+    0 12px 28px rgba(28, 25, 23, 0.08);
+}
+.feature--glass h3 { margin-top: 0; font-size: 18px; letter-spacing: -0.02em; word-break: keep-all; }
+.feature--glass p { color: #44403c; font-size: 16px; line-height: 1.55; word-break: keep-all; }
 .note { color: var(--muted); }
 .modal-back {
   position: fixed;
@@ -1076,6 +1089,10 @@ fieldset.field legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
 }
 .v16-logo-strip li { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 88px; }
 .v16-logo-strip img { height: 36px; width: auto; max-width: 92px; object-fit: contain; }
+.client-logos { padding-top: 8px; padding-bottom: 16px; }
+.client-logos .v16-logo-strip { margin: 8px auto 0; max-width: 1040px; }
+.client-logos .v16-logo-strip img { height: 56px; max-width: 132px; }
+.client-logos .v16-logo-strip li { min-width: 128px; }
 .v16-logo-strip span { font-size: 16px; color: #57534e; letter-spacing: -0.02em; line-height: 1.3; }
 
 #catalog .v14-panel {
@@ -1298,6 +1315,7 @@ fieldset.field legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
     0 12px 28px rgba(28, 25, 23, 0.10);
 }
 .v15-case img { width: 148px; height: 88px; object-fit: cover; border-radius: 12px; }
+.v15-case img.is-logo { object-fit: contain; background: #fff; padding: 8px; }
 .v15-case__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .v15-case__who { margin: 0; font-size: 16px; color: #57534e; }
 .v15-case__who strong { color: #1c1917; font-size: 18px; }
@@ -1308,4 +1326,7 @@ fieldset.field legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
   #catalog .v14-panel { padding: 24px 16px 20px; border-radius: 24px; }
   .v15-case { grid-template-columns: 1fr; }
   .v15-case img { width: 100%; height: 160px; }
+  .v15-case img.is-logo { height: 88px; }
+  .feature-grid--pair { grid-template-columns: 1fr; }
+  .client-logos .v16-logo-strip img { height: 44px; }
 }

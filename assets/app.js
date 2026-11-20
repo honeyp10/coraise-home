@@ -70,7 +70,81 @@
       name: "FortiGate (UTM)",
       summary: "\uBC29\uD654\uBCBD\xB7VPN\xB7\uC704\uD611 \uCC28\uB2E8\uC744 \uD55C \uC7A5\uBE44\uC5D0\uC11C \uB2E4\uB8E8\uB294 \uD3EC\uD2F0\uB137 \uD1B5\uD569 \uBCF4\uC548 \uC7A5\uBE44\uC785\uB2C8\uB2E4.",
       keywords: ["\uD3EC\uD2F0\uAC8C\uC774\uD2B8", "\uD3EC\uD2F0\uB137", "fortinet", "utm", "\uBC29\uD654\uBCBD", "vpn", "ngfw"],
-      url: "https://coraise.kr/network/fortinet/"
+      url: "https://coraise.kr/network/fortinet/",
+      detail: {
+        logo: "./assets/products/fortinet-logo.svg",
+        logoAlt: "Fortinet",
+        photo: "./assets/products/fortigate-120g.svg",
+        photoAlt: "FortiGate 120G",
+        caseId: "digicap",
+        caseImage: "./assets/clients/digicap-logo.svg",
+        caseImageAlt: "\uB514\uC9C0\uCEA1",
+        featuresLead: "FortiGate\uB294 \uBC29\uD654\uBCBD, \uCE68\uC785 \uBC29\uC9C0, \uC545\uC131\uCF54\uB4DC \uCC28\uB2E8, \uC6F9\xB7\uC571 \uD544\uD130, VPN, SD-WAN\uC744 \uD55C \uC7A5\uBE44\uC5D0\uC11C \uB2E4\uB8F9\uB2C8\uB2E4.",
+        features: [
+          {
+            title: "\uCC28\uC138\uB300 \uBC29\uD654\uBCBD",
+            body: "\uC8FC\uC18C\uC640 \uD3EC\uD2B8\uB9CC \uBCF4\uB294 \uBC29\uC2DD\uACFC \uB2EC\uB9AC, \uB204\uAC00 \uC5B4\uB5A4 \uC571\uC73C\uB85C \uC811\uC18D\uD558\uB294\uC9C0\uB3C4 \uAD6C\uBD84\uD574 \uD5C8\uC6A9\uD558\uAC70\uB098 \uB9C9\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+          },
+          {
+            title: "VPN \xB7 \uC6D0\uACA9 \uC811\uC18D",
+            body: "\uC0AC\uBB34\uC2E4 \uBC16\uC5D0\uC11C\uB294 IPsec VPN\uC73C\uB85C \uD68C\uC0AC \uC2DC\uC2A4\uD15C\uC5D0 \uC811\uC18D\uD569\uB2C8\uB2E4. \uAD6C\uAE00 \uC6CC\uD06C\uC2A4\uD398\uC774\uC2A4, Microsoft 365, Okta \uACC4\uC815\uC73C\uB85C \uB85C\uADF8\uC778\uD558\uB3C4\uB85D \uC5F0\uB3D9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+          },
+          {
+            title: "IPS \uCE68\uC785 \uBC29\uC9C0",
+            body: "\uC54C\uB824\uC9C4 \uCDE8\uC57D\uC810\uC744 \uB178\uB9AC\uB294 \uACF5\uACA9\uACFC \uC545\uC131 \uD2B8\uB798\uD53D\uC744 \uC0AC\uBB34\uC2E4 \uB124\uD2B8\uC6CC\uD06C\uC5D0 \uB4E4\uC5B4\uC624\uAE30 \uC804\uC5D0 \uCC28\uB2E8\uD569\uB2C8\uB2E4."
+          },
+          {
+            title: "\uC6F9\xB7\uC571 \uD544\uD130\uB9C1",
+            body: "\uD53C\uC2F1 \uC0AC\uC774\uD2B8\uC640 \uC545\uC131 \uC0AC\uC774\uD2B8\uB97C \uB9C9\uACE0, \uC5C5\uBB34\uC640 \uAD00\uACC4\uC5C6\uB294 \uC0AC\uC774\uD2B8 \uBD84\uB958\uB3C4 \uB9C9\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uBA54\uC2E0\uC800\uC640 \uD074\uB77C\uC6B0\uB4DC \uC571\uC740 \uC571 \uB2E8\uC704\uB85C \uD5C8\uC6A9\uD569\uB2C8\uB2E4."
+          },
+          {
+            title: "\uC548\uD2F0\uBC14\uC774\uB7EC\uC2A4",
+            body: "\uBA54\uC77C \uCCA8\uBD80\uC640 \uB2E4\uC6B4\uB85C\uB4DC \uD30C\uC77C\uC5D0\uC11C \uC545\uC131\uCF54\uB4DC\uB97C \uAC78\uB7EC \uB0C5\uB2C8\uB2E4."
+          },
+          {
+            title: "SD-WAN",
+            body: "\uC778\uD130\uB137 \uD68C\uC120\uC774 \uC5EC\uB7EC \uAC1C\uC774\uBA74 \uD488\uC9C8\uC5D0 \uB530\uB77C \uB098\uB220 \uC4F0\uACE0, \uBCF8\uC0AC\uC640 \uC9C0\uC810\uC740 IPsec\uC73C\uB85C \uC5F0\uACB0\uD569\uB2C8\uB2E4."
+          }
+        ],
+        effectsLead: "\uC7A5\uBE44 \uD55C \uB300\uB85C \uC785\uAD6C\uB97C \uC815\uB9AC\uD558\uACE0, \uC0AC\uB78C \uB2E8\uC704\uB85C \uC811\uC18D\uC744 \uB2E4\uB8F9\uB2C8\uB2E4.",
+        effects: [
+          {
+            title: "\uBCF4\uC548 \uAE30\uB2A5\uC744 \uD55C\uACF3\uC5D0\uC11C",
+            body: "\uBC29\uD654\uBCBD, \uCE68\uC785 \uBC29\uC9C0, \uC545\uC131\uCF54\uB4DC \uCC28\uB2E8, \uC6F9 \uD544\uD130, VPN\uC744 \uC7A5\uBE44\uB9C8\uB2E4 \uB098\uB204\uC9C0 \uC54A\uACE0 \uD55C \uC7A5\uBE44\uC5D0\uC11C \uB2E4\uB8F9\uB2C8\uB2E4."
+          },
+          {
+            title: "\uD1F4\uC0AC\uD558\uBA74 \uC678\uBD80 \uC811\uC18D\uB3C4 \uD568\uAED8",
+            body: "\uD68C\uC0AC \uACC4\uC815\uC73C\uB85C VPN\uC5D0 \uB85C\uADF8\uC778\uD558\uBA74, \uADF8 \uACC4\uC815\uC744 \uB9C9\uB294 \uAC83\uB9CC\uC73C\uB85C \uC6D0\uACA9 \uC811\uC18D\uB3C4 \uD568\uAED8 \uB9C9\uD799\uB2C8\uB2E4."
+          },
+          {
+            title: "\uD68C\uC120\uC744 \uD488\uC9C8\uC5D0 \uB530\uB77C",
+            body: "\uD68C\uC120\uC774 \uB458 \uC774\uC0C1\uC774\uBA74 \uD488\uC9C8\uC5D0 \uB530\uB77C \uC790\uB3D9\uC73C\uB85C \uB098\uB220 \uC4F0\uACE0, \uBCF8\uC0AC\uC640 \uC9C0\uC810\uC744 \uC554\uD638\uD654\uB41C \uD1B5\uB85C\uB85C \uC5F0\uACB0\uD569\uB2C8\uB2E4."
+          },
+          {
+            title: "\uB204\uAC00 \uBB34\uC5C7\uC744 \uC37C\uB294\uC9C0",
+            body: "\uB204\uAC00 \uC5B4\uB5A4 \uC571\uC73C\uB85C \uD1B5\uC2E0\uD588\uB294\uC9C0 \uD654\uBA74\uACFC \uB85C\uADF8\uB85C \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+          }
+        ],
+        opsLead: "\uCF54\uB808\uC774\uC988\uAC00 \uC548\uB0B4\uD558\uB294 \uB3C4\uC785 \uC21C\uC11C\uC785\uB2C8\uB2E4. \uBAA8\uB378, \uAE30\uAC04, \uC7A5\uC560 \uB300\uC751 \uBC94\uC704\uB294 \uC0C1\uB2F4\uC5D0\uC11C \uD655\uC815\uD569\uB2C8\uB2E4.",
+        ops: [
+          {
+            title: "1. \uD604\uD669 \uC9C4\uB2E8",
+            body: "\uD68C\uC120, \uC0AC\uC6A9\uC790 \uC218, \uC9C0\uAE08 \uC4F0\uB294 \uBC29\uD654\uBCBD \uC815\uCC45\uACFC VPN \uBC29\uC2DD\uC744 \uD655\uC778\uD569\uB2C8\uB2E4. \uCF54\uB808\uC774\uC988\uB294 \uC774 \uC9C4\uB2E8\uC744 \uBB34\uB8CC\uB85C \uBCF8\uB2E4\uACE0 \uC548\uB0B4\uD569\uB2C8\uB2E4."
+          },
+          {
+            title: "2. \uBAA8\uB378\uACFC \uAD6C\uC131",
+            body: "\uD2B8\uB798\uD53D\uACFC \uCF1C\uB824\uB294 \uBCF4\uC548 \uAE30\uB2A5\uC744 \uBCF4\uACE0 \uBAA8\uB378\uACFC \uBCF4\uC548 \uAD6C\uB3C5(\uBC88\uB4E4)\uC744 \uACE0\uB985\uB2C8\uB2E4. \uAD6C\uB9E4\uC640 \uC6D4 \uAD6C\uB3C5 \uC911 \uC5B4\uB5A4 \uBC29\uC2DD\uC778\uC9C0\uB3C4 \uACAC\uC801\uC73C\uB85C \uC548\uB0B4\uD569\uB2C8\uB2E4."
+          },
+          {
+            title: "3. \uAD6C\uCD95\uACFC \uC815\uCC45 \uC774\uC804",
+            body: "\uC4F0\uB358 \uBC29\uD654\uBCBD \uC815\uCC45\uC744 \uC62E\uAE30\uACE0, \uACC4\uC815 \uC5F0\uB3D9\uACFC IPsec VPN\uC744 \uC124\uC815\uD569\uB2C8\uB2E4. \uC804\uD658\uC740 \uC5C5\uBB34 \uC2DC\uAC04 \uC678\uC5D0 \uC9C4\uD589\uD569\uB2C8\uB2E4."
+          },
+          {
+            title: "4. \uC6B4\uC601\uACFC \uC720\uC9C0\uBCF4\uC218",
+            body: "\uD38C\uC6E8\uC5B4 \uC5C5\uB370\uC774\uD2B8, \uC815\uCC45 \uBCC0\uACBD, \uB85C\uADF8 \uC810\uAC80, \uC7A5\uC560 \uB300\uC751, \uB77C\uC774\uC120\uC2A4 \uB9CC\uB8CC \uC548\uB0B4\uB97C \uC774\uC5B4\uC11C \uB9E1\uAE38 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uAD00\uC81C(COMON)\uC640 \uC124\uC815 \uBC31\uC5C5(COBOX)\uC740 \uC720\uC9C0\uBCF4\uC218\xB7\uAD6C\uB3C5 \uBC94\uC704\uC5D0 \uB530\uB77C \uC81C\uACF5\uB41C\uB2E4\uACE0 \uC548\uB0B4\uB418\uC5B4 \uC788\uC2B5\uB2C8\uB2E4. \uC815\uD655\uD55C \uBC94\uC704\uB294 \uC0C1\uB2F4\uC5D0\uC11C \uD655\uC778\uD569\uB2C8\uB2E4."
+          }
+        ]
+      }
     },
     {
       id: "lan-edge",
@@ -1513,11 +1587,16 @@
         <p>${esc2(item.body)}</p>
       </article>`
       ).join("");
-      if (document.querySelector("#logos")) document.querySelector("#logos").innerHTML = cases.map(
-        (item) => `<a class="card logo-slot" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0" /><strong>${esc2(item.company)}</strong></a>`
-      ).join("");
-      if (document.querySelector("#cases")) document.querySelector("#cases").innerHTML = cases.slice(0, 3).map(
-        (item) => `<article class="card case">
+      const logos = document.querySelector("#logos");
+      if (logos) {
+        logos.innerHTML = cases.map(
+          (item) => `<a class="card logo-slot" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0" /><strong>${esc2(item.company)}</strong></a>`
+        ).join("");
+      }
+      const caseGrid = document.querySelector("#cases");
+      if (caseGrid) {
+        caseGrid.innerHTML = cases.slice(0, 3).map(
+          (item) => `<article class="card case">
         <a class="case__link" href="cases.html#${item.id}">
           <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
           <div class="case__body">
@@ -1530,7 +1609,8 @@
           <a class="card__go" href="${consultHref({ q: item.company, from: "cases" })}">\uC774 \uC0AC\uB840\uCC98\uB7FC \uC0C1\uB2F4</a>
         </div>
       </article>`
-      ).join("");
+        ).join("");
+      }
       document.querySelector("#examples").innerHTML = examples.map((word) => `<button class="chip" type="button" data-example="${esc2(word)}">${esc2(word)}</button>`).join("");
     }
     function concernHref(item) {
@@ -1810,7 +1890,45 @@
     <p class="note">${esc2(text)}</p>
   </section>`;
   }
+  function glassCards(items, columns) {
+    return `<div class="feature-grid feature-grid--glass${columns ? ` feature-grid--${columns}` : ""}">${items.map(
+      (item) => `<article class="feature feature--glass">
+        <h3>${esc2(item.title)}</h3>
+        <p>${esc2(item.body)}</p>
+      </article>`
+    ).join("")}</div>`;
+  }
+  function detailSections(service) {
+    const detail = service.detail;
+    if (!detail) {
+      return [
+        placeholder("features", "\uC8FC\uC694 \uAE30\uB2A5", "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0\uB294 \uAE30\uB2A5 \uBAA9\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4."),
+        placeholder("effect", "\uB3C4\uC785 \uD6A8\uACFC", "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0\uB294 \uB3C4\uC785 \uD6A8\uACFC\uB97C \uC801\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4."),
+        placeholder(
+          "ops",
+          "\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0",
+          service.category === "care" ? service.summary : "\uAD6C\uCD95\uACFC \uC6B4\uC601 \uBC94\uC704\uB294 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uB530\uB85C \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4."
+        )
+      ].join("");
+    }
+    return `<section id="features" class="detail-block">
+      <h2>\uC8FC\uC694 \uAE30\uB2A5</h2>
+      <p>${esc2(detail.featuresLead)}</p>
+      ${glassCards(detail.features)}
+    </section>
+    <section id="effect" class="detail-block">
+      <h2>\uB3C4\uC785 \uD6A8\uACFC</h2>
+      <p>${esc2(detail.effectsLead)}</p>
+      ${glassCards(detail.effects, "pair")}
+    </section>
+    <section id="ops" class="detail-block">
+      <h2>\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0</h2>
+      <p>${esc2(detail.opsLead)}</p>
+      ${glassCards(detail.ops, "pair")}
+    </section>`;
+  }
   function initService() {
+    var _a2, _b, _c, _d, _e, _f;
     renderChrome();
     const params = new URLSearchParams(location.search);
     const service = serviceById(params.get("id"));
@@ -1839,11 +1957,13 @@
     ];
     const ask = consultHref({ service: service.id, category: category.id, from: "service" });
     const download = consultHref({ service: service.id, category: category.id, from: "download" });
-    const relatedCase = cases.find((item) => item.categories.includes(service.category));
+    const relatedCase = ((_a2 = service.detail) == null ? void 0 : _a2.caseId) ? cases.find((item) => item.id === service.detail.caseId) : cases.find((item) => item.categories.includes(service.category));
+    const caseImage = ((_b = service.detail) == null ? void 0 : _b.caseImage) || (relatedCase == null ? void 0 : relatedCase.image);
+    const caseAlt = ((_c = service.detail) == null ? void 0 : _c.caseImageAlt) || (relatedCase ? `${relatedCase.company} \uC778\uD130\uBDF0` : "");
     const relatedHtml = relatedCase ? `<aside class="v15-related">
         <p class="v15-related__label">\uC774 \uC11C\uBE44\uC2A4\uC640 \uAC00\uAE4C\uC6B4 \uC0AC\uB840</p>
         <a class="v15-case v15-case--related" href="${esc2(relatedCase.url)}" target="_blank" rel="noopener noreferrer">
-          <img src="${esc2(relatedCase.image)}" alt="${esc2(relatedCase.company)} \uC778\uD130\uBDF0" />
+          <img class="${((_d = service.detail) == null ? void 0 : _d.caseImage) ? "is-logo" : ""}" src="${esc2(caseImage)}" alt="${esc2(caseAlt)}" />
           <span class="v15-case__text">
             <span class="v15-case__who"><strong>${esc2(relatedCase.company)}</strong></span>
             <span class="v15-case__title">${esc2(relatedCase.quote)}</span>
@@ -1851,6 +1971,8 @@
           </span>
         </a>
       </aside>` : "";
+    const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : `<div class="product__logo">\uB85C\uACE0 \uC790\uB9AC<br /><strong>${esc2(service.name)}</strong></div>`;
+    const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : `<div class="product__photo">\uC81C\uD488 \uC774\uBBF8\uC9C0 \uC790\uB9AC</div>`;
     main.innerHTML = `
     <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
     <section class="product">
@@ -1866,8 +1988,8 @@
         <p class="note">\uC790\uB8CC \uD30C\uC77C\uC740 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uC5C6\uC2B5\uB2C8\uB2E4. \uC790\uB8CC \uB2E4\uC6B4\uB85C\uB4DC\uB294 \uC0C1\uB2F4 \uCC3D\uC744 \uC5FD\uB2C8\uB2E4.</p>
       </div>
       <div class="product__aside">
-        <div class="product__logo">\uB85C\uACE0 \uC790\uB9AC<br /><strong>${esc2(service.name)}</strong></div>
-        <div class="product__photo">\uC81C\uD488 \uC774\uBBF8\uC9C0 \uC790\uB9AC</div>
+        ${logoHtml}
+        ${photoHtml}
       </div>
     </section>
     <nav class="detail-tabs" aria-label="\uC11C\uBE44\uC2A4 \uB0B4\uC6A9">
@@ -1892,9 +2014,7 @@
       ${mates.length ? `<h3>\uAC19\uC740 \uBB36\uC74C</h3><ul class="point-list">${mates.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc2(item.name)}</a></li>`).join("")}</ul>` : ""}
       ${related.length ? `<h3>\uAC19\uC740 \uBD84\uB958</h3><ul class="point-list">${related.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc2(item.name)}</a> \xB7 ${esc2(item.title)}</li>`).join("")}</ul>` : ""}
     </section>
-    ${placeholder("features", "\uC8FC\uC694 \uAE30\uB2A5", "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0\uB294 \uAE30\uB2A5 \uBAA9\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
-    ${placeholder("effect", "\uB3C4\uC785 \uD6A8\uACFC", "\uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0\uB294 \uB3C4\uC785 \uD6A8\uACFC\uB97C \uC801\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
-    ${placeholder("ops", "\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0", service.category === "care" ? service.summary : "\uAD6C\uCD95\uACFC \uC6B4\uC601 \uBC94\uC704\uB294 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uB530\uB85C \uC5C6\uC2B5\uB2C8\uB2E4. \uC0C1\uB2F4\uC5D0\uC11C \uC548\uB0B4\uD569\uB2C8\uB2E4.")}
+    ${detailSections(service)}
     <section id="cases" class="detail-block">
       <h2>\uAD00\uB828 \uC0AC\uB840</h2>
       ${cases.filter((item) => item.categories.includes(service.category)).length ? `<ul class="point-list">${cases.filter((item) => item.categories.includes(service.category)).map(
