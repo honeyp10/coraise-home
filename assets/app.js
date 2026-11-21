@@ -2098,7 +2098,7 @@
       </aside>` : "";
     const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : "";
     const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : "";
-    const asideHtml = (relatedHtml || photoHtml) ? `<div class="product__aside">${relatedHtml}${photoHtml}</div>` : "";
+    const asideHtml = relatedHtml ? `<div class="product__aside">${relatedHtml}</div>` : "";
     main.innerHTML = `
     <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
     <section class="product">
@@ -2109,6 +2109,7 @@
           <p>${esc2(service.summary)}</p>
         </div>
         ${logoHtml}
+        ${photoHtml}
         <div class="product__cta">
           <a class="btn btn--solid product__consult" href="${ask}">\uB3C4\uC785 \uC0C1\uB2F4\uD558\uAE30 \u2192</a>
         </div>

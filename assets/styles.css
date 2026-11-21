@@ -752,7 +752,7 @@ body:has(.mega:not([hidden])) .header__bar {
 .product h1 { margin: 0 0 8px; font-size: clamp(32px, 4vw, 44px); letter-spacing: -0.03em; line-height: 1.25; }
 .product__sub { margin: 0 0 8px; font-weight: 700; }
 .product__aside { display: grid; gap: 12px; align-content: start; min-width: 0; }
-.product__logo { width: 100%; max-width: 360px; }
+.product__logo, .product__photo { width: 100%; max-width: 360px; }
 .product__cta { margin-top: 8px; }
 .product__consult {
   display: inline-flex;
@@ -1477,12 +1477,12 @@ fieldset.field legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
   .product { grid-template-columns: 1fr; }
   .product__main, .product__aside { display: contents; }
   .product__intro { order: 1; }
-  .product__cta { order: 2; margin-top: 8px; }
-  .v15-related { order: 3; }
-  .product__logo { order: 4; }
-  .product__photo { order: 5; }
+  .product__logo { order: 2; }
+  .product__photo { order: 3; }
+  .product__cta { order: 4; margin-top: 8px; }
+  .v15-related { order: 5; }
   .product__consult { width: 100%; max-width: none; }
-  .product__logo, .product__photo { min-height: 88px; }
+  .product__logo, .product__photo { min-height: 88px; max-width: none; }
   .product__photo { min-height: 160px; }
   .product__logo img { max-width: 180px; height: 32px; }
   .detail-tabs {
