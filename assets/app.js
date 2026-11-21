@@ -2081,7 +2081,6 @@
       }
     ];
     const ask = consultHref({ service: service.id, category: category.id, from: "service" });
-    const download = consultHref({ service: service.id, category: category.id, from: "download" });
     const relatedCase = ((_a2 = service.detail) == null ? void 0 : _a2.caseId) ? cases.find((item) => item.id === service.detail.caseId) : cases.find((item) => item.categories.includes(service.category));
     const caseImage = ((_b = service.detail) == null ? void 0 : _b.caseImage) || (relatedCase == null ? void 0 : relatedCase.image);
     const caseAlt = ((_c = service.detail) == null ? void 0 : _c.caseImageAlt) || (relatedCase ? `${relatedCase.company} \uC778\uD130\uBDF0` : "");
@@ -2095,27 +2094,26 @@
             <span class="v15-case__body">${esc2(relatedCase.summary)}</span>
           </span>
         </a>
+        <a class="btn btn--line v15-related__more" href="#cases">\uAD00\uB828 \uC0AC\uB840 \uB354 \uBCF4\uAE30</a>
       </aside>` : "";
-    const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : `<div class="product__logo"><strong>${esc2(service.name)}</strong></div>`;
-    const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : `<div class="product__photo"><span class="hit__initial">${esc2(String(service.name || "?").trim().charAt(0))}</span></div>`;
+    const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : "";
+    const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : "";
+    const asideHtml = (relatedHtml || photoHtml) ? `<div class="product__aside">${relatedHtml}${photoHtml}</div>` : "";
     main.innerHTML = `
     <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
     <section class="product">
-      <div>
-        <h1>${esc2(service.name)}</h1>
-        <p class="product__sub">${esc2(service.title)}</p>
+      <div class="product__main">
+        <div class="product__intro">
+          <h1>${esc2(service.name)}</h1>
+          <p class="product__sub">${esc2(service.title)}</p>
           <p>${esc2(service.summary)}</p>
-          ${relatedHtml}
-          <div class="form-actions">
-          <a class="btn btn--solid" href="${ask}">\uB3C4\uC785 \uC0C1\uB2F4\uD558\uAE30 \u2192</a>
-          <a class="btn btn--line" href="${download}">\uC790\uB8CC \uB2E4\uC6B4\uB85C\uB4DC</a>
         </div>
-        <p class="note">\uC790\uB8CC \uD30C\uC77C\uC740 \uC774 \uD504\uB85C\uD1A0\uD0C0\uC785\uC5D0 \uC5C6\uC2B5\uB2C8\uB2E4. \uC790\uB8CC \uB2E4\uC6B4\uB85C\uB4DC\uB294 \uC0C1\uB2F4 \uCC3D\uC744 \uC5FD\uB2C8\uB2E4.</p>
-      </div>
-      <div class="product__aside">
         ${logoHtml}
-        ${photoHtml}
+        <div class="product__cta">
+          <a class="btn btn--solid product__consult" href="${ask}">\uB3C4\uC785 \uC0C1\uB2F4\uD558\uAE30 \u2192</a>
+        </div>
       </div>
+      ${asideHtml}
     </section>
     <nav class="detail-tabs" aria-label="\uC11C\uBE44\uC2A4 \uB0B4\uC6A9">
       <a href="#overview">\uAC1C\uC694</a>
