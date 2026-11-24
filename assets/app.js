@@ -1508,15 +1508,10 @@
     }
     return `<article class="card case" id="${esc2(item.id)}">${inner}</article>`;
   }
-  function initCases() {
-    renderChrome();
-    const list = document.querySelector("#case-list");
-    const filters = document.querySelector("#case-filters");
-    let active = "";
-    function caseRowHtml(item) {
-      const category = item.categories.map((id) => categoryById(id)).find(Boolean);
-      const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
-      return `<a class="case-row" id="${esc2(item.id)}" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
+  function caseRowHtml(item) {
+    const category = item.categories.map((id) => categoryById(id)).find(Boolean);
+    const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
+    return `<a class="case-row" id="${esc2(item.id)}" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
         <span class="case-row__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} 인터뷰 이미지" width="96" height="64" /></span>
         <span class="case-row__body">
           <span class="case-row__kicker"><strong>${esc2(item.company)}</strong>${tag}</span>
@@ -1524,7 +1519,12 @@
           <span class="case-row__summary">${esc2(item.summary)}</span>
         </span>
       </a>`;
-    }
+  }
+  function initCases() {
+    renderChrome();
+    const list = document.querySelector("#case-list");
+    const filters = document.querySelector("#case-filters");
+    let active = "";
     function renderList() {
       const rows = active ? cases.filter((item) => item.categories.includes(active)) : cases;
       const featured = rows.slice(0, 3);
@@ -2174,9 +2174,12 @@
     ${detailSections(service)}
     <section id="cases" class="detail-block">
       <h2>\uAD00\uB828 \uC0AC\uB840</h2>
-      ${cases.filter((item) => item.categories.includes(service.category)).length ? `<ul class="point-list">${cases.filter((item) => item.categories.includes(service.category)).map(
-      (item) => `<li><a href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">${esc2(item.company)}</a> \xB7 ${esc2(item.quote)}</li>`
-    ).join("")}</ul>` : `<p class="note">\uC774 \uBD84\uB958\uC5D0 \uD574\uB2F9\uD558\uB294 \uACF5\uAC1C \uC778\uD130\uBDF0\uB294 coraise.kr\uC5D0 \uC5C6\uC5B4, \uC0AC\uB840 \uCE74\uB4DC\uB97C \uB450\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>`}
+      ${(() => {
+      const relatedCases = cases.filter((item) => item.categories.includes(service.category));
+      return relatedCases.length
+        ? `<div class="case-compact">${relatedCases.map((item) => caseRowHtml(item)).join("")}</div>`
+        : `<p class="note">\uC774 \uBD84\uB958\uC5D0 \uD574\uB2F9\uD558\uB294 \uACF5\uAC1C \uC778\uD130\uBDF0\uB294 coraise.kr\uC5D0 \uC5C6\uC5B4, \uC0AC\uB840 \uCE74\uB4DC\uB97C \uB450\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>`;
+    })()}
     </section>`;
     initDetailTabs();
   }
