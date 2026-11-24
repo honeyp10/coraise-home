@@ -1588,3 +1588,29 @@ fieldset.field legend { font-weight: 700; padding: 0; margin-bottom: 8px; }
   .v22-cases__more .btn { width: 100%; min-width: 0; }
   .card__go { display: inline-flex; align-items: center; min-height: 44px; }
 }
+
+
+/* v27: concern card illustrations */
+#catalog .card.concern .tone { display: none; }
+#catalog .card.concern .concern__bar { margin-bottom: 12px; }
+#catalog .concern__art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f4ece4;
+  margin: 0 0 2px;
+  box-shadow: 0 0 0 1px rgba(70, 66, 62, 0.08);
+}
+#catalog .concern__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+#catalog .card.concern h3 { margin-top: 12px; }
+@media (max-width: 800px) {
+  #catalog .concern__art { border-radius: 14px; }
+}

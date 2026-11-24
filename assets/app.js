@@ -1640,11 +1640,20 @@
       return [...suggest.querySelectorAll("[data-option]")];
     }
     function paintHome() {
+      const concernArtAlt = {
+        accounts: "직원들이 계정과 권한을 함께 관리하는 그림",
+        security: "회사 건물을 방패가 지키고 보안을 점검하는 그림",
+        remote: "집과 사무실을 오가며 안전하게 접속하는 그림",
+        build: "사무실 네트워크와 서버를 구축하는 그림",
+        tools: "메일과 협업 도구가 담긴 상자를 연 그림"
+      };
       document.querySelector("#concerns").innerHTML = concerns.map((item) => {
         const see = concernHref(item);
+        const art = `./assets/concerns/${item.id}.svg`;
+        const artAlt = concernArtAlt[item.id] || item.title;
         return `<a class="card concern" href="${see}">
           <span class="concern__bar"></span>
-          <span class="tone">${icon(item.icon)}</span>
+          <span class="concern__art"><img src="${art}" alt="${esc2(artAlt)}" width="700" height="525" loading="lazy"></span>
           <h3>${esc2(item.title)}</h3>
           <p>${esc2(item.text)}</p>
           <span class="card__go">\uC194\uB8E8\uC158 \uBCF4\uAE30 \u2192</span>
