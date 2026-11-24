@@ -1659,13 +1659,24 @@
           <span class="card__go">\uC194\uB8E8\uC158 \uBCF4\uAE30 \u2192</span>
         </a>`;
       }).join("");
+      const categoryArtAlt = {
+        network: "네트워크 장비와 와이파이, 방화벽을 설치하는 그림",
+        security: "자료를 잠금장치와 지문으로 보호하는 그림",
+        account: "새 직원에게 계정 카드를 내어 주는 그림",
+        software: "노트북과 클라우드에 메일, 문서, 화상회의가 연결된 그림",
+        hardware: "노트북, NAS, 모니터를 탁자에 골라 놓은 그림",
+        care: "헤드셋을 끼고 유지보수를 도와주는 그림"
+      };
       document.querySelector("#categories").innerHTML = categories.map((category) => {
         const count = servicesIn(category.id).length;
         const see = `index.html?cat=${category.id}`;
         const ask = consultHref({ category: category.id, from: "home" });
+        const art = `./assets/categories/${category.id}.svg`;
+        const artAlt = categoryArtAlt[category.id] || category.name;
         return `<article class="card cat">
         <a class="cat__main" href="${see}">
-          <span class="tone">${icon(category.icon)}</span>
+          <span class="cat__bar"></span>
+          <span class="cat__art"><img src="${art}" alt="${esc2(artAlt)}" width="700" height="525" loading="lazy"></span>
           <h3>${esc2(category.name)}</h3>
           <span class="cat__count">\uC11C\uBE44\uC2A4 ${count}\uAC1C</span>
         </a>
