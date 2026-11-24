@@ -1525,12 +1525,19 @@
     const list = document.querySelector("#case-list");
     const filters = document.querySelector("#case-filters");
     let active = "";
+    const caseMq = window.matchMedia("(max-width: 800px)");
     function renderList() {
       const rows = active ? cases.filter((item) => item.categories.includes(active)) : cases;
-      const featured = rows.slice(0, 3);
-      const rest = rows.slice(3);
-      list.innerHTML = `<div class="case-grid">${featured.map((item) => caseCardHtml(item)).join("")}</div>` + (rest.length ? `<div class="case-compact">${rest.map((item) => caseRowHtml(item)).join("")}</div>` : "");
+      if (caseMq.matches) {
+        list.innerHTML = `<div class="case-grid">${rows.map((item) => caseCardHtml(item)).join("")}</div>`;
+      } else {
+        const featured = rows.slice(0, 3);
+        const rest = rows.slice(3);
+        list.innerHTML = `<div class="case-grid">${featured.map((item) => caseCardHtml(item)).join("")}</div>` + (rest.length ? `<div class="case-compact">${rest.map((item) => caseRowHtml(item)).join("")}</div>` : "");
+      }
     }
+    if (caseMq.addEventListener) caseMq.addEventListener("change", renderList);
+    else caseMq.addListener(renderList);
     if (filters) {
       const used = new Set(cases.flatMap((item) => item.categories));
       const chips = [{ id: "", name: "\uC804\uCCB4", count: cases.length }].concat(
@@ -2043,6 +2050,57 @@
   }
 
   // js/service.js
+  var caseLogoById = { digicap: "./assets/clients/digicap-logo.svg" };
+  function caseLogoRowHtml(item, service) {
+    const fromService = service && service.detail && service.detail.caseId === item.id ? service.detail.caseImage : "";
+    const logo = fromService || caseLogoById[item.id] || "";
+    const mark = logo
+      ? `<img src="${esc2(logo)}" alt="${esc2(item.company)}" width="80" height="80" />`
+      : `<span class="v32-mono" aria-hidden="true">${esc2(item.company.slice(0, 2))}</span>`;
+    return `<a class="v32-case-row" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
+      <span class="v32-case-row__logo">${mark}</span>
+      <span class="v32-case-row__body"><strong>${esc2(item.company)}</strong><span>${esc2(item.quote)}</span></span>
+    </a>`;
+  }
+  function featureRowList(items) {
+    const icons = ["shield", "network", "check", "search", "box", "cloud"];
+    return `<div class="v32-feat">${items.map((item, i) => `<article class="v32-feat__row">
+        <span class="v32-feat__icon">${icon(icons[i % icons.length])}</span>
+        <div><h3>${esc2(item.title)}</h3><p>${esc2(item.body)}</p></div>
+      </article>`).join("")}</div>`;
+  }
+  function effectCardList(items) {
+    const icons = ["box", "users", "network", "search"];
+    return `<div class="v32-effects">${items.map((item, i) => `<article class="v32-effect">
+        <span class="v32-effect__icon">${icon(icons[i % icons.length])}</span>
+        <h3>${esc2(item.title)}</h3>
+        <p>${esc2(item.body)}</p>
+      </article>`).join("")}</div>`;
+  }
+  function opsStepList(items) {
+    const icons = ["search", "box", "wrench", "headset"];
+    return `<div class="v32-steps">${items.map((item, i) => {
+      const matched = String(item.title).match(/^(\d+)\.\s*(.*)$/);
+      const num = matched ? matched[1] : String(i + 1);
+      const title = matched ? matched[2] : item.title;
+      return `<article class="v32-step">
+        <span class="v32-step__num">${esc2(num)}</span>
+        <span class="v32-step__icon">${icon(icons[i % icons.length])}</span>
+        <h3>${esc2(title)}</h3>
+        <p>${esc2(item.body)}</p>
+      </article>`;
+    }).join("")}</div>`;
+  }
+  function peerCards(list) {
+    return `<div class="v32-peers">${list.map((item) => {
+      const cat = categoryById(item.category);
+      return `<a class="v32-peer" href="service.html?id=${encodeURIComponent(item.id)}">
+        <span class="v32-peer__icon">${icon((cat && cat.icon) || "box")}</span>
+        <strong>${esc2(item.name)}</strong>
+        <span>${esc2(item.title)}</span>
+      </a>`;
+    }).join("")}</div>`;
+  }
   function placeholder(id, title, text) {
     return `<section id="${id}" class="detail-block">
     <h2>${esc2(title)}</h2>
@@ -2073,17 +2131,17 @@
     return `<section id="features" class="detail-block">
       <h2>\uC8FC\uC694 \uAE30\uB2A5</h2>
       <p>${esc2(detail.featuresLead)}</p>
-      ${glassCards(detail.features)}
+      ${featureRowList(detail.features)}
     </section>
     <section id="effect" class="detail-block">
       <h2>\uB3C4\uC785 \uD6A8\uACFC</h2>
       <p>${esc2(detail.effectsLead)}</p>
-      ${glassCards(detail.effects, "pair")}
+      ${effectCardList(detail.effects)}
     </section>
     <section id="ops" class="detail-block">
       <h2>\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0</h2>
       <p>${esc2(detail.opsLead)}</p>
-      ${glassCards(detail.ops, "pair")}
+      ${opsStepList(detail.ops)}
     </section>`;
   }
   function initService() {
@@ -2118,70 +2176,64 @@
     const relatedCase = ((_a2 = service.detail) == null ? void 0 : _a2.caseId) ? cases.find((item) => item.id === service.detail.caseId) : cases.find((item) => item.categories.includes(service.category));
     const caseImage = ((_b = service.detail) == null ? void 0 : _b.caseImage) || (relatedCase == null ? void 0 : relatedCase.image);
     const caseAlt = ((_c = service.detail) == null ? void 0 : _c.caseImageAlt) || (relatedCase ? `${relatedCase.company} \uC778\uD130\uBDF0` : "");
-    const relatedHtml = relatedCase ? `<aside class="v15-related">
-        <p class="v15-related__label">\uC774 \uC11C\uBE44\uC2A4\uC640 \uAC00\uAE4C\uC6B4 \uC0AC\uB840</p>
-        <a class="v15-case v15-case--related" href="${esc2(relatedCase.url)}" target="_blank" rel="noopener noreferrer">
-          <img class="${((_d = service.detail) == null ? void 0 : _d.caseImage) ? "is-logo" : ""}" src="${esc2(caseImage)}" alt="${esc2(caseAlt)}" />
-          <span class="v15-case__text">
-            <span class="v15-case__who"><strong>${esc2(relatedCase.company)}</strong></span>
-            <span class="v15-case__title">${esc2(relatedCase.quote)}</span>
-            <span class="v15-case__body">${esc2(relatedCase.summary)}</span>
+    const relatedHtml = relatedCase ? `<aside class="v32-near">
+        <p class="v32-near__label">이 서비스와 가까운 사례</p>
+        <a class="v32-near__card" href="${esc2(relatedCase.url)}" target="_blank" rel="noopener noreferrer">
+          <img src="${esc2(caseImage)}" alt="${esc2(caseAlt)}" />
+          <span class="v32-near__text">
+            <strong>${esc2(relatedCase.company)}</strong>
+            <span class="v32-near__title">${esc2(relatedCase.quote)}</span>
+            <span class="v32-near__body">${esc2(relatedCase.summary)}</span>
           </span>
         </a>
-        <a class="btn btn--line v15-related__more" href="#cases">\uAD00\uB828 \uC0AC\uB840 \uB354 \uBCF4\uAE30</a>
+        <a class="v32-near__more" href="#cases">관련 사례 더 보기</a>
       </aside>` : "";
-    const logoHtml = ((_e = service.detail) == null ? void 0 : _e.logo) ? `<div class="product__logo"><img src="${esc2(service.detail.logo)}" alt="${esc2(service.detail.logoAlt)}" /></div>` : "";
-    const photoHtml = ((_f = service.detail) == null ? void 0 : _f.photo) ? `<div class="product__photo"><img src="${esc2(service.detail.photo)}" alt="${esc2(service.detail.photoAlt)}" /></div>` : "";
-    const mediaHtml = (logoHtml || photoHtml) ? `<div class="product__media">${logoHtml}${photoHtml}</div>` : "";
+    const photo = ((_e = service.detail) == null ? void 0 : _e.photo) || ((_f = service.detail) == null ? void 0 : _f.logo);
+    const photoAlt = ((_e = service.detail) == null ? void 0 : _e.photo)
+      ? service.detail.photoAlt
+      : (((_f = service.detail) == null ? void 0 : _f.logoAlt) || service.name);
+    const mediaHtml = photo ? `<div class="v32-media"><img src="${esc2(photo)}" alt="${esc2(photoAlt)}" /></div>` : "";
+    const download = consultHref({ service: service.id, category: category.id, from: "download" });
+    const relatedCases = cases.filter((item) => item.categories.includes(service.category));
     main.innerHTML = `
-    <p class="crumb"><a href="index.html">\uD648</a> \u203A <a href="index.html?all=1">\uC194\uB8E8\uC158</a> \u203A <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> \u203A ${esc2(service.name)}</p>
-    <section class="product">
-      <div class="product__main">
-        <div class="product__intro">
-          <h1>${esc2(service.name)}</h1>
-          <p class="product__sub">${esc2(service.title)}</p>
-          <p>${esc2(service.summary)}</p>
-        </div>
-        ${mediaHtml}
-        <div class="product__cta">
-          <a class="btn btn--solid product__consult" href="${ask}">\uB3C4\uC785 \uC0C1\uB2F4\uD558\uAE30 \u2192</a>
-        </div>
+    <p class="crumb"><a href="index.html">홈</a> &gt; <a href="index.html?all=1">솔루션</a> &gt; <a href="index.html?cat=${category.id}">${esc2(category.name)}</a> &gt; ${esc2(service.name)}</p>
+    <section class="v32-hero">
+      <div class="v32-hero__copy">
+        <h1>${esc2(service.name)}</h1>
+        <p class="product__sub">${esc2(service.title)}</p>
+        <p class="v32-hero__desc">${esc2(service.summary)}</p>
         ${relatedHtml}
+        <div class="v32-cta">
+          <a class="btn btn--solid product__consult" href="${ask}">도입 상담하기 →</a>
+          <a class="btn btn--line product__download" href="${download}">자료 다운로드</a>
+          <p class="v32-dl-note">자료는 상담 신청 후 보내 드려요.</p>
+        </div>
       </div>
+      ${mediaHtml}
     </section>
-    <nav class="detail-tabs" aria-label="\uC11C\uBE44\uC2A4 \uB0B4\uC6A9">
-      <a href="#overview">\uAC1C\uC694</a>
-      <a href="#features">\uC8FC\uC694 \uAE30\uB2A5</a>
-      <a href="#effect">\uB3C4\uC785 \uD6A8\uACFC</a>
-      <a href="#ops">\uAD6C\uCD95\xB7\uC6B4\uC601 \uC9C0\uC6D0</a>
-      <a href="#cases">\uAD00\uB828 \uC0AC\uB840</a>
+    <nav class="detail-tabs" aria-label="서비스 내용">
+      <a href="#overview">개요</a>
+      <a href="#features">주요 기능</a>
+      <a href="#effect">도입 효과</a>
+      <a href="#ops">구축·운영 지원</a>
+      <a href="#cases">관련 사례</a>
     </nav>
     <section id="overview" class="detail-block">
-      <h2>${esc2(service.name)}\uB780?</h2>
-      <p>${esc2(service.summary)}</p>
-      <div class="feature-grid">
-        ${known.map(
-      (item) => `<article class="feature">
-              <span class="tone">${icon(item.icon)}</span>
-              <h3>${esc2(item.label)}</h3>
-              <p>${esc2(item.text)}</p>
-            </article>`
-    ).join("")}
+      <h2>${esc2(service.name)}란?</h2>
+      <div class="v32-info">
+        ${known.map((item) => `<div class="v32-info__row"><span>${esc2(item.label)}</span><strong>${esc2(item.text)}</strong></div>`).join("")}
       </div>
-      ${mates.length ? `<h3>\uAC19\uC740 \uBB36\uC74C</h3><ul class="point-list">${mates.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc2(item.name)}</a></li>`).join("")}</ul>` : ""}
-      ${related.length ? `<h3>\uAC19\uC740 \uBD84\uB958</h3><ul class="point-list">${related.map((item) => `<li><a href="service.html?id=${encodeURIComponent(item.id)}">${esc2(item.name)}</a> \xB7 ${esc2(item.title)}</li>`).join("")}</ul>` : ""}
+      ${mates.length ? `<h3 class="v32-subhead">같은 묶음</h3>${peerCards(mates)}` : ""}
+      ${related.length ? `<h3 class="v32-subhead">같은 분류</h3>${peerCards(related)}` : ""}
     </section>
     ${detailSections(service)}
     <section id="cases" class="detail-block">
-      <h2>\uAD00\uB828 \uC0AC\uB840</h2>
-      ${(() => {
-      const relatedCases = cases.filter((item) => item.categories.includes(service.category));
-      return relatedCases.length
-        ? `<div class="case-compact">${relatedCases.map((item) => caseRowHtml(item)).join("")}</div>`
-        : `<p class="note">\uC774 \uBD84\uB958\uC5D0 \uD574\uB2F9\uD558\uB294 \uACF5\uAC1C \uC778\uD130\uBDF0\uB294 coraise.kr\uC5D0 \uC5C6\uC5B4, \uC0AC\uB840 \uCE74\uB4DC\uB97C \uB450\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>`;
-    })()}
+      <h2>관련 사례</h2>
+      ${relatedCases.length
+        ? `<div class="v32-case-list">${relatedCases.map((item) => caseLogoRowHtml(item, service)).join("")}</div>`
+        : `<p class="note">이 분류에 해당하는 공개 인터뷰는 coraise.kr에 없어, 사례 카드를 두지 않았습니다.</p>`}
     </section>`;
-    initDetailTabs();
+        initDetailTabs();
   }
 
   function initDetailTabs() {
