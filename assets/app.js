@@ -1513,9 +1513,23 @@
     const list = document.querySelector("#case-list");
     const filters = document.querySelector("#case-filters");
     let active = "";
+    function caseRowHtml(item) {
+      const category = item.categories.map((id) => categoryById(id)).find(Boolean);
+      const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
+      return `<a class="case-row" id="${esc2(item.id)}" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
+        <span class="case-row__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} 인터뷰 이미지" width="96" height="64" /></span>
+        <span class="case-row__body">
+          <span class="case-row__kicker"><strong>${esc2(item.company)}</strong>${tag}</span>
+          <span class="case-row__title">${esc2(item.quote)}</span>
+          <span class="case-row__summary">${esc2(item.summary)}</span>
+        </span>
+      </a>`;
+    }
     function renderList() {
       const rows = active ? cases.filter((item) => item.categories.includes(active)) : cases;
-      list.innerHTML = rows.map((item) => caseCardHtml(item)).join("");
+      const featured = rows.slice(0, 3);
+      const rest = rows.slice(3);
+      list.innerHTML = `<div class="case-grid">${featured.map((item) => caseCardHtml(item)).join("")}</div>` + (rest.length ? `<div class="case-compact">${rest.map((item) => caseRowHtml(item)).join("")}</div>` : "");
     }
     if (filters) {
       const used = new Set(cases.flatMap((item) => item.categories));
@@ -2164,6 +2178,54 @@
       (item) => `<li><a href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">${esc2(item.company)}</a> \xB7 ${esc2(item.quote)}</li>`
     ).join("")}</ul>` : `<p class="note">\uC774 \uBD84\uB958\uC5D0 \uD574\uB2F9\uD558\uB294 \uACF5\uAC1C \uC778\uD130\uBDF0\uB294 coraise.kr\uC5D0 \uC5C6\uC5B4, \uC0AC\uB840 \uCE74\uB4DC\uB97C \uB450\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>`}
     </section>`;
+    initDetailTabs();
+  }
+
+  function initDetailTabs() {
+    const nav = document.querySelector(".detail-tabs");
+    if (!nav) return;
+    const links = [...nav.querySelectorAll("a[href^='#']")];
+    const sections = links.map((a) => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+    let lockUntil = 0;
+    function scrollTabIntoView(tab) {
+      const box = nav.getBoundingClientRect();
+      const t = tab.getBoundingClientRect();
+      const delta = t.left + t.width / 2 - (box.left + box.width / 2);
+      nav.scrollTo({ left: nav.scrollLeft + delta, behavior: "smooth" });
+    }
+    function setActive(id, fromClick) {
+      if (!id) return;
+      links.forEach((a) => {
+        const on = a.getAttribute("href") === `#${id}`;
+        a.classList.toggle("is-on", on);
+        if (on) {
+          a.setAttribute("aria-current", "true");
+          scrollTabIntoView(a);
+        } else {
+          a.removeAttribute("aria-current");
+        }
+      });
+      if (fromClick) lockUntil = Date.now() + 900;
+    }
+    nav.addEventListener("click", (event) => {
+      const a = event.target.closest("a[href^='#']");
+      if (!a) return;
+      const id = (a.getAttribute("href") || "").slice(1);
+      setActive(id, true);
+    });
+    if (typeof IntersectionObserver === "function" && sections.length) {
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header")) || 76;
+      const tabs = nav.getBoundingClientRect().height || 48;
+      const observer = new IntersectionObserver((entries) => {
+        if (Date.now() < lockUntil) return;
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActive(visible[0].target.id);
+      }, { rootMargin: `-${header + tabs}px 0px -45% 0px`, threshold: [0.1, 0.25, 0.5] });
+      sections.forEach((section) => observer.observe(section));
+    }
+    const initial = (location.hash || "").slice(1);
+    if (initial && sections.some((section) => section.id === initial)) setActive(initial, true);
+    else if (sections[0]) setActive(sections[0].id);
   }
 
   // js/boot.js
