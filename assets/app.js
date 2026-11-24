@@ -2173,19 +2173,34 @@
       }
     ];
     const ask = consultHref({ service: service.id, category: category.id, from: "service" });
-    const relatedCase = ((_a2 = service.detail) == null ? void 0 : _a2.caseId) ? cases.find((item) => item.id === service.detail.caseId) : cases.find((item) => item.categories.includes(service.category));
-    const caseImage = ((_b = service.detail) == null ? void 0 : _b.caseImage) || (relatedCase == null ? void 0 : relatedCase.image);
-    const caseAlt = ((_c = service.detail) == null ? void 0 : _c.caseImageAlt) || (relatedCase ? `${relatedCase.company} \uC778\uD130\uBDF0` : "");
-    const relatedHtml = relatedCase ? `<aside class="v32-near">
-        <p class="v32-near__label">이 서비스와 가까운 사례</p>
-        <a class="v32-near__card" href="${esc2(relatedCase.url)}" target="_blank" rel="noopener noreferrer">
-          <img src="${esc2(caseImage)}" alt="${esc2(caseAlt)}" />
+    const featuredCase = ((_a2 = service.detail) == null ? void 0 : _a2.caseId) ? cases.find((item) => item.id === service.detail.caseId) : null;
+    const sameCategoryCases = cases.filter((item) => item.categories.includes(service.category));
+    const nearCases = [];
+    const nearSeen = new Set();
+    function addNearCase(item) {
+      if (!item || nearSeen.has(item.id)) return;
+      nearSeen.add(item.id);
+      nearCases.push(item);
+    }
+    addNearCase(featuredCase);
+    sameCategoryCases.forEach(addNearCase);
+    const nearList = nearCases.slice(0, 3);
+    function nearCardHtml(item) {
+      const featured = ((_b = service.detail) == null ? void 0 : _b.caseId) === item.id;
+      const image = (featured && ((_c = service.detail) == null ? void 0 : _c.caseImage)) || item.image;
+      const alt = (featured && ((_d = service.detail) == null ? void 0 : _d.caseImageAlt)) || `${item.company} \uC778\uD130\uBDF0`;
+      return `<a class="v32-near__card" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
+          <img src="${esc2(image)}" alt="${esc2(alt)}" />
           <span class="v32-near__text">
-            <strong>${esc2(relatedCase.company)}</strong>
-            <span class="v32-near__title">${esc2(relatedCase.quote)}</span>
-            <span class="v32-near__body">${esc2(relatedCase.summary)}</span>
+            <strong>${esc2(item.company)}</strong>
+            <span class="v32-near__title">${esc2(item.quote)}</span>
+            <span class="v32-near__body">${esc2(item.summary)}</span>
           </span>
-        </a>
+        </a>`;
+    }
+    const relatedHtml = nearList.length ? `<aside class="v32-near">
+        <p class="v32-near__label">이 서비스와 가까운 사례</p>
+        <div class="v32-near__list">${nearList.map(nearCardHtml).join("")}</div>
         <a class="v32-near__more" href="#cases">관련 사례 더 보기</a>
       </aside>` : "";
     const photo = ((_e = service.detail) == null ? void 0 : _e.photo) || ((_f = service.detail) == null ? void 0 : _f.logo);
