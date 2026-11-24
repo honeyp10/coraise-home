@@ -12,19 +12,19 @@
     <header data-header></header>
     <main id="content">
       <section class="hero">
-        <h1>IT 담당자가 없어도,<br />필요한 IT 서비스를 바로 찾아요</h1>
-        <p class="hero__lead">고민을 검색하면 맞는 서비스와 상담까지 안내해 드려요</p>
+        <h1>IT 인프라가 많아도,<br />필요한 IT 서비스를<br />바로 찾기 어려우셨나요?</h1>
+        <p class="hero__lead">지금, IT 인프라·툴·솔루션을 한 곳에서 비교하고<br />우리 조직에 맞는 최적의 서비스를 찾아보세요.</p>
         <form class="search" id="search-form" role="search">
           <div class="search__box">
             <span class="search__glass" id="glass"></span>
-            <input id="q" name="q" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest" aria-label="서비스 또는 고민 검색" placeholder="와이파이 끊김, 보안 점검처럼 고민을 입력해 보세요" />
+            <input id="q" name="q" type="search" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest" aria-label="서비스 또는 고민 검색" placeholder="고민을 검색해 보세요" />
             <button class="icon-btn search__clear" id="clear-q" type="button" hidden aria-label="검색어 지우기">×</button>
             <button class="btn btn--solid search__submit" type="submit">검색</button>
           </div>
           <div class="suggest" id="suggest" role="listbox" hidden></div>
         </form>
         <div class="chips" id="example-row">
-          <span class="chips__label">이렇게 찾아보세요</span>
+          <span class="chips__label">인기 검색어</span>
           <span id="examples"></span>
         </div>
         <p class="hero__assist"><a id="hero-consult" href="contact.html?from=home">찾기 어렵다면 무료 상담 신청 →</a></p>
@@ -36,10 +36,16 @@
             <div class="v14-panel">
             <div class="section__head">
               <div>
-                <h2>무엇을 찾고 계신가요?</h2>
-                <p>IT 용어를 몰라도 고민으로 찾거나, 메뉴와 같은 6개 분류로 바로 보실 수 있어요.</p>
+                <h2>
+                  <span class="catalog-title--desktop">무엇을 찾고 계신가요?</span>
+                  <span class="catalog-title--mobile">주요 IT 서비스 한눈에 보기</span>
+                </h2>
+                <p class="catalog-lead">IT 용어를 몰라도 고민으로 찾거나, 메뉴와 같은 6개 분류로 바로 보실 수 있어요.</p>
               </div>
-              <a class="link-quiet" href="index.html?all=1">전체 서비스 한눈에 보기 →</a>
+              <a class="link-quiet" href="index.html?all=1">
+                <span class="catalog-all--desktop">전체 서비스 한눈에 보기 →</span>
+                <span class="catalog-all--mobile">전체보기 &gt;</span>
+              </a>
             </div>
             <div class="find-tabs" role="tablist" aria-label="찾기 방법">
               <button id="tab-concern" class="find-tab is-on" type="button" role="tab" aria-selected="true" aria-controls="panel-concern" data-find-tab="concern" tabindex="0">고민으로 찾기</button>
