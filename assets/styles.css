@@ -2171,15 +2171,22 @@ body[data-page="service"] .wrap { max-width: 1120px; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
   grid-template-areas:
-    "title near"
-    "sub near"
-    "desc near"
+    "title ."
+    "sub ."
+    "desc ."
     "media near"
-    "cta .";
+    "cta near";
   column-gap: 48px;
   row-gap: 0;
   align-items: start;
   padding: 8px 0 28px;
+}
+.v32-hero:not(:has(.v32-media)) {
+  grid-template-areas:
+    "title ."
+    "sub ."
+    "desc ."
+    "cta near";
 }
 .v32-hero__copy { display: contents; }
 .v32-hero h1 { grid-area: title; }
@@ -2188,6 +2195,21 @@ body[data-page="service"] .wrap { max-width: 1120px; }
 .v32-media { grid-area: media; margin-bottom: 20px; }
 .v32-near { grid-area: near; margin: 0; align-self: start; }
 .v32-cta { grid-area: cta; }
+
+@media (min-width: 801px) {
+  .v32-hero:has(.v32-media) .v32-near {
+    position: relative;
+  }
+  .v32-hero:has(.v32-media) .v32-near__label {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 0 8px;
+  }
+}
+
 .v32-hero h1 {
   margin: 0 0 8px;
   font-size: clamp(32px, 4vw, 44px);
