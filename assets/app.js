@@ -1294,6 +1294,9 @@
         <div class="drawer__links" hidden>${links}<a class="drawer__ask" href="${consultHref({ category: category.id, from: "menu" })}">\uC5B4\uB5A4 \uAC78 \uACE8\uB77C\uC57C \uD560\uC9C0 \uBAA8\uB974\uACA0\uB2E4\uBA74 \uC0C1\uB2F4 \uC2E0\uCCAD</a></div>
       </div>`;
     }).join("");
+    const onCases = document.body.dataset.page === "cases";
+    const casesCurrent = onCases ? " is-current" : "";
+    const casesAria = onCases ? ' aria-current="page"' : "";
     header.innerHTML = `
     <a class="skip" href="#content">\uBCF8\uBB38\uC73C\uB85C \uAC74\uB108\uB6F0\uAE30</a>
     <div class="header__bar">
@@ -1303,7 +1306,10 @@
           <span class="logo__word">coraise</span>
         </a>
         <nav class="nav" aria-label="\uC11C\uBE44\uC2A4 \uBD84\uB958">${nav}</nav>
-        <a class="btn btn--solid header__cta" href="contact.html">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
+        <div class="header__actions">
+          <a class="btn btn--line header__cases${casesCurrent}" href="cases.html"${casesAria}>\uC804\uCCB4 \uACE0\uAC1D\uC0AC\uB840</a>
+          <a class="btn btn--solid header__cta" href="contact.html">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
+        </div>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer">
           <span class="menu-toggle__bars" aria-hidden="true"></span>
           <span class="sr-only">\uBA54\uB274 \uC5F4\uAE30</span>
@@ -1317,7 +1323,10 @@
         <button type="button" class="icon-btn" data-drawer-close aria-label="\uBA54\uB274 \uB2EB\uAE30">${icon("close")}</button>
       </div>
       <div class="drawer__body">${drawerGroups}</div>
-      <a class="btn btn--solid drawer__cta" href="contact.html">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
+      <div class="drawer__actions">
+        <a class="btn btn--line drawer__cases${casesCurrent}" href="cases.html"${casesAria}>\uC804\uCCB4 \uACE0\uAC1D\uC0AC\uB840</a>
+        <a class="btn btn--solid drawer__cta" href="contact.html">\uBB34\uB8CC \uC0C1\uB2F4 \uC2E0\uCCAD</a>
+      </div>
     </div>`;
     footer.innerHTML = `
     <div class="footer__inner">
