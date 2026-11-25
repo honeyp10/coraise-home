@@ -1525,19 +1525,10 @@
     const list = document.querySelector("#case-list");
     const filters = document.querySelector("#case-filters");
     let active = "";
-    const caseMq = window.matchMedia("(max-width: 800px)");
     function renderList() {
       const rows = active ? cases.filter((item) => item.categories.includes(active)) : cases;
-      if (caseMq.matches) {
-        list.innerHTML = `<div class="case-grid">${rows.map((item) => caseCardHtml(item)).join("")}</div>`;
-      } else {
-        const featured = rows.slice(0, 3);
-        const rest = rows.slice(3);
-        list.innerHTML = `<div class="case-grid">${featured.map((item) => caseCardHtml(item)).join("")}</div>` + (rest.length ? `<div class="case-compact">${rest.map((item) => caseRowHtml(item)).join("")}</div>` : "");
-      }
+      list.innerHTML = `<div class="case-grid">${rows.map((item) => caseCardHtml(item)).join("")}</div>`;
     }
-    if (caseMq.addEventListener) caseMq.addEventListener("change", renderList);
-    else caseMq.addListener(renderList);
     if (filters) {
       const used = new Set(cases.flatMap((item) => item.categories));
       const chips = [{ id: "", name: "\uC804\uCCB4", count: cases.length }].concat(
@@ -1758,25 +1749,7 @@
       ).join("");
       const homeCases = document.querySelector("#home-cases");
       if (homeCases) {
-        homeCases.innerHTML = cases.slice(0, 6).map((item) => {
-          const category = item.categories.map((id) => categoryById(id)).find(Boolean);
-          const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
-          const logo = (item.detail && item.detail.caseImage) || caseLogoById[item.id] || "";
-          const mark = logo
-            ? `<img src="${esc2(logo)}" alt="${esc2(item.company)}" width="80" height="80" />`
-            : `<span class="v32-mono" aria-hidden="true">${esc2(item.company.slice(0, 2))}</span>`;
-          return `<article class="card case v22-case">
-        <a class="case__link" href="cases.html#${item.id}">
-          <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
-          <span class="v22-case__logo">${mark}</span>
-          <div class="case__body">
-            <p class="case__kicker"><strong>${esc2(item.company)}</strong>${tag}</p>
-            <h3>${esc2(item.quote)}</h3>
-            <p>${esc2(item.summary)}</p>
-          </div>
-        </a>
-      </article>`;
-        }).join("");
+        homeCases.innerHTML = cases.slice(0, 6).map((item) => caseRowHtml(item)).join("");
       }
       document.querySelector("#examples").innerHTML = examples.map((word) => `<button class="chip" type="button" data-example="${esc2(word)}">${esc2(word)}</button>`).join("");
     }
