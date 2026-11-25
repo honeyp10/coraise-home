@@ -1752,6 +1752,7 @@
         </div>
         <h3>${esc2(item.headline)}</h3>
         <p>${esc2(item.body)}</p>
+        <span class="v18-reason__go" aria-hidden="true">&gt;</span>
       </article>`;
         }
       ).join("");
@@ -1760,9 +1761,14 @@
         homeCases.innerHTML = cases.slice(0, 6).map((item) => {
           const category = item.categories.map((id) => categoryById(id)).find(Boolean);
           const tag = category ? `<span class="pill">${esc2(category.short || category.name)}</span>` : "";
+          const logo = (item.detail && item.detail.caseImage) || caseLogoById[item.id] || "";
+          const mark = logo
+            ? `<img src="${esc2(logo)}" alt="${esc2(item.company)}" width="80" height="80" />`
+            : `<span class="v32-mono" aria-hidden="true">${esc2(item.company.slice(0, 2))}</span>`;
           return `<article class="card case v22-case">
         <a class="case__link" href="cases.html#${item.id}">
           <div class="case__shot"><img src="${esc2(item.image)}" alt="${esc2(item.company)} \uC778\uD130\uBDF0 \uC774\uBBF8\uC9C0" /></div>
+          <span class="v22-case__logo">${mark}</span>
           <div class="case__body">
             <p class="case__kicker"><strong>${esc2(item.company)}</strong>${tag}</p>
             <h3>${esc2(item.quote)}</h3>
@@ -2235,6 +2241,7 @@
     </nav>
     <section id="overview" class="detail-block">
       <h2>${esc2(service.name)}란?</h2>
+      <p class="v32-overview-lead">${esc2(service.summary)}</p>
       <div class="v32-info">
         ${known.map((item) => `<div class="v32-info__row"><span>${esc2(item.label)}</span><strong>${esc2(item.text)}</strong></div>`).join("")}
       </div>
