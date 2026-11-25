@@ -2060,7 +2060,13 @@
     digicap: "./assets/clients/digicap-logo.svg",
     dsrv: "./assets/clients/dsrv-logo.svg",
     neo: "./assets/clients/neo-logo.svg",
-    channel: "./assets/clients/channel-logo.svg"
+    channel: "./assets/clients/channel-logo.svg",
+    lve: "./assets/clients/lve-mark.svg",
+    ant: "./assets/clients/ant-mark.svg",
+    bagel: "./assets/clients/bagel-mark.svg",
+    isoi: "./assets/clients/isoi-mark.svg",
+    olive: "./assets/clients/olive-mark.svg",
+    ctrl9: "./assets/clients/ctrl9-mark.svg"
   };
   function caseLogoRowHtml(item, service) {
     const fromService = service && service.detail && service.detail.caseId === item.id ? service.detail.caseImage : "";
