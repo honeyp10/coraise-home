@@ -2061,17 +2061,59 @@
       <span class="v32-case-row__body"><strong>${esc2(item.company)}</strong><span>${esc2(item.quote)}</span></span>
     </a>`;
   }
+  function detailArtSrc(kind, key) {
+    if (!key) return "";
+    const name = kind + "-" + key;
+    if (window.DETAIL_ILLUST && window.DETAIL_ILLUST[name]) return window.DETAIL_ILLUST[name];
+    return `./assets/detail-illust/${name}.webp`;
+  }
+  function featureArtKey(title) {
+    const t = String(title);
+    if (t.includes("차세대")) return "ngfw";
+    if (t.includes("VPN")) return "vpn";
+    if (t.includes("IPS")) return "ips";
+    if (t.includes("필터")) return "webfilter";
+    if (t.includes("안티바이러스")) return "av";
+    if (t.includes("SD-WAN")) return "sdwan";
+    return "";
+  }
+  function effectArtKey(title) {
+    const t = String(title);
+    if (t.includes("한곳")) return "allinone";
+    if (t.includes("퇴사")) return "offboard";
+    if (t.includes("회선")) return "lines";
+    if (t.includes("무엇을") || t.includes("썼는지")) return "visibility";
+    return "";
+  }
+  function opsArtKey(title) {
+    const t = String(title);
+    if (t.includes("현황") || t.includes("진단")) return "assess";
+    if (t.includes("모델")) return "model";
+    if (t.includes("구축") || t.includes("이전")) return "migrate";
+    if (t.includes("운영") || t.includes("유지")) return "maintain";
+    return "";
+  }
+  function peerArtKey(id) {
+    const map = { "lan-edge": "lan-edge", axgate: "axgate", netgear: "netgear", aruba: "aruba" };
+    return map[id] || "";
+  }
+  function artOrIcon(src, fallbackIcon, slotClass) {
+    if (src) {
+      return `<span class="${slotClass} ${slotClass}--art"><img src="${src}" alt="" width="512" height="512"></span>`;
+    }
+    return `<span class="${slotClass}">${icon(fallbackIcon)}</span>`;
+  }
   function featureRowList(items) {
     const icons = ["shield", "network", "check", "search", "box", "cloud"];
     return `<div class="v32-feat">${items.map((item, i) => `<article class="v32-feat__row">
-        <span class="v32-feat__icon">${icon(icons[i % icons.length])}</span>
+        ${artOrIcon(detailArtSrc("feat", featureArtKey(item.title)), icons[i % icons.length], "v32-feat__icon")}
         <div><h3>${esc2(item.title)}</h3><p>${esc2(item.body)}</p></div>
       </article>`).join("")}</div>`;
   }
   function effectCardList(items) {
     const icons = ["box", "users", "network", "search"];
     return `<div class="v32-effects">${items.map((item, i) => `<article class="v32-effect">
-        <span class="v32-effect__icon">${icon(icons[i % icons.length])}</span>
+        ${artOrIcon(detailArtSrc("effect", effectArtKey(item.title)), icons[i % icons.length], "v32-effect__icon")}
         <h3>${esc2(item.title)}</h3>
         <p>${esc2(item.body)}</p>
       </article>`).join("")}</div>`;
@@ -2080,11 +2122,9 @@
     const icons = ["search", "box", "wrench", "headset"];
     return `<div class="v32-steps">${items.map((item, i) => {
       const matched = String(item.title).match(/^(\d+)\.\s*(.*)$/);
-      const num = matched ? matched[1] : String(i + 1);
       const title = matched ? matched[2] : item.title;
       return `<article class="v32-step">
-        <span class="v32-step__num">${esc2(num)}</span>
-        <span class="v32-step__icon">${icon(icons[i % icons.length])}</span>
+        ${artOrIcon(detailArtSrc("ops", opsArtKey(item.title)), icons[i % icons.length], "v32-step__icon")}
         <h3>${esc2(title)}</h3>
         <p>${esc2(item.body)}</p>
       </article>`;
@@ -2094,7 +2134,7 @@
     return `<div class="v32-peers">${list.map((item) => {
       const cat = categoryById(item.category);
       return `<a class="v32-peer" href="service.html?id=${encodeURIComponent(item.id)}">
-        <span class="v32-peer__icon">${icon((cat && cat.icon) || "box")}</span>
+        ${artOrIcon(detailArtSrc("peer", peerArtKey(item.id)), (cat && cat.icon) || "box", "v32-peer__icon")}
         <strong>${esc2(item.name)}</strong>
         <span>${esc2(item.title)}</span>
       </a>`;
