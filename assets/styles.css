@@ -3108,3 +3108,50 @@ body[data-page="service"] .wrap { max-width: 1120px; }
 @media (max-width: 600px) {
   body[data-page="service"] .v32-effects { grid-template-columns: 1fr 1fr; }
 }
+
+
+/* v41: real company logos in case lists — contained, centered, readable */
+.v22-case__logo img,
+.v32-case-row__logo img,
+.v32-near__card--logo img {
+  object-fit: contain;
+  object-position: center;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+.v32-case-row {
+  grid-template-columns: 108px minmax(0, 1fr) 16px;
+}
+.v32-case-row__logo {
+  width: 108px;
+  height: 64px;
+  place-items: center;
+}
+.v32-case-row__logo img {
+  max-width: 96px;
+  max-height: 52px;
+}
+.v32-near__card--logo img {
+  width: 72px;
+  height: 72px;
+  max-width: 72px;
+  max-height: 72px;
+  padding: 8px;
+  box-sizing: border-box;
+  background: #f6f3ef;
+  border-radius: 10px;
+}
+@media (max-width: 800px) {
+  #v22-cases .v22-case .case__link {
+    grid-template-columns: 108px minmax(0, 1fr) 16px;
+  }
+  #v22-cases .v22-case__logo {
+    width: 108px;
+    height: 72px;
+  }
+  #v22-cases .v22-case__logo img {
+    max-width: 96px;
+    max-height: 56px;
+  }
+}

@@ -2056,7 +2056,12 @@
   }
 
   // js/service.js
-  var caseLogoById = { digicap: "./assets/clients/digicap-logo.svg" };
+  var caseLogoById = {
+    digicap: "./assets/clients/digicap-logo.svg",
+    dsrv: "./assets/clients/dsrv-logo.svg",
+    neo: "./assets/clients/neo-logo.svg",
+    channel: "./assets/clients/channel-logo.svg"
+  };
   function caseLogoRowHtml(item, service) {
     const fromService = service && service.detail && service.detail.caseId === item.id ? service.detail.caseImage : "";
     const logo = fromService || caseLogoById[item.id] || "";
@@ -2193,9 +2198,13 @@
     const nearList = nearCases.slice(0, 3);
     function nearCardHtml(item) {
       const featured = ((_b = service.detail) == null ? void 0 : _b.caseId) === item.id;
-      const image = (featured && ((_c = service.detail) == null ? void 0 : _c.caseImage)) || item.image;
-      const alt = (featured && ((_d = service.detail) == null ? void 0 : _d.caseImageAlt)) || `${item.company} \uC778\uD130\uBDF0`;
-      return `<a class="v32-near__card" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
+      const logo = caseLogoById[item.id] || (featured && ((_c = service.detail) == null ? void 0 : _c.caseImage)) || "";
+      const image = logo || item.image;
+      const alt = logo
+        ? item.company
+        : ((featured && ((_d = service.detail) == null ? void 0 : _d.caseImageAlt)) || `${item.company} \uC778\uD130\uBDF0`);
+      const logoClass = logo ? " v32-near__card--logo" : "";
+      return `<a class="v32-near__card${logoClass}" href="${esc2(item.url)}" target="_blank" rel="noopener noreferrer">
           <img src="${esc2(image)}" alt="${esc2(alt)}" />
           <span class="v32-near__text">
             <strong>${esc2(item.company)}</strong>
